@@ -54,7 +54,7 @@ function rectCollisionCheck(rect1, rect2) {
 
   return hit;
 }
-// 
+
 function keyboard(keyCode) {
   var key = {};
 
@@ -169,7 +169,6 @@ function circleCollisionBounce(c1, c2) {
 
   return hit;
 }
-
 
 export {
   createCircle,
