@@ -1,7 +1,6 @@
 import * as PIXI from "pixi.js";
-import { Application, Container, Graphics, Sprite, TextStyle, Texture, } from "pixi.js";
+import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
 import * as lib from "./lib";
-
 
 let loader = PIXI.Loader.shared;
 
@@ -15,8 +14,8 @@ PIXI.utils.sayHello(type);
 let DIMENSIONS = {
   height: 600,
   mainWidth: 800,
-  gameWidth: 600
-}
+  gameWidth: 600,
+};
 
 let app = new Application({
   width: DIMENSIONS.mainWidth,
@@ -27,20 +26,13 @@ let app = new Application({
 
 document.querySelector("#main").appendChild(app.view);
 
-
-loader
-  .load(setup);
-
-
-let textStyle = new TextStyle({fill: "black"})
+loader.load(setup);
 
 let state, gameScene, gameBg, gameOverScene;
-
 let scoreScene, scoreText, scoreBg;
-
+let frets;
 
 function setup() {
-
   gameScene = new Container();
   scoreScene = new Container();
 
@@ -58,7 +50,7 @@ function setup() {
   scoreScene.position.set(DIMENSIONS.gameWidth, 0);
 
   // Score Text
-  scoreText = lib.createText(0, 0, "score: 10", textStyle, scoreScene);
+  scoreText = lib.createText(0, 0, "score: 10", { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
   // Game Background
@@ -70,14 +62,12 @@ function setup() {
 
   gameScene.addChild(gameBg);
 
-
   // The distance between each pole is 70, there are 8 such poles, hence 7 spaces,
   // therefore total width between the first and last pole will be 7 * 70 = 490.
   // Total width of the gameScene is 600, hence there is a whitespace of 110 on both sides.
-  
+
   // Lines
   for (let i = 0; i < 8; i++) {
-
     let offsetX = 55;
     let gap = 70;
 
@@ -93,15 +83,64 @@ function setup() {
       line.lineStyle(2, 0x444444, 1);
       line.moveTo(offsetX + i * gap, 20);
       line.lineTo(offsetX + i * gap, DIMENSIONS.height - 20);
-
     }
 
     gameScene.addChild(line);
   }
 
+  frets = [];
+
+  let s = lib.keyboard(83),
+    d = lib.keyboard(68),
+    f = lib.keyboard(70),
+    j = lib.keyboard(74),
+    k = lib.keyboard(75),
+    l = lib.keyboard(76);
+
+  
+  s.press = () => {
+    frets[0].isPressed = true;
+  }; s.release = () => {
+    frets[0].isPressed = false;
+  }
+
+  d.press = () => {
+    frets[1].isPressed = true;
+  };
+  d.release = () => {
+    frets[1].isPressed = false;
+  };
+
+  f.press = () => {
+    frets[2].isPressed = true;
+  };
+  f.release = () => {
+    frets[2].isPressed = false;
+  };
+
+  j.press = () => {
+    frets[3].isPressed = true;
+  };
+  j.release = () => {
+    frets[3].isPressed = false;
+  };
+
+  k.press = () => {
+    frets[4].isPressed = true;
+  };
+  k.release = () => {
+    frets[4].isPressed = false;
+  };
+
+  l.press = () => {
+    frets[5].isPressed = true;
+  };
+  l.release = () => {
+    frets[5].isPressed = false;
+  };
+
   // Frets
   for (let i = 0; i < 7; i++) {
-
     let offsetX = 60;
     let gap = 70;
 
@@ -110,28 +149,35 @@ function setup() {
     }
 
     let fret = new Sprite(Texture.WHITE);
-    fret.width = 60
-    fret.height = 20
+    fret.width = 60;
+    fret.height = 20;
     fret.tint = 0xffffff;
 
-    fret.position.set(offsetX + i * gap, DIMENSIONS.height - 60);
-    gameScene.addChild(fret);
+    fret.position.set(offsetX + i * gap, DIMENSIONS.height - 80);
+    frets.push({ fret: fret, isPressed: false });
 
+    gameScene.addChild(fret);
   }
-  
+
+  console.log(frets)
   state = play;
 
   app.ticker.add((delta) => gameLoop(delta));
 }
 
-
 function gameLoop(delta) {
   state(delta);
 }
 
-
 function play(delta) {
 
+  frets.forEach((fret) => {
+    if (fret.isPressed) {
+      // console.log(fret);
+      fret.fret.tint = 0x555555;
+    } else {
+      fret.fret.tint = 0xffffff;
+    }
+  })
+
 }
-
-

@@ -1,8 +1,11 @@
-import {Graphics, Text} from "pixi.js";
+import {Graphics, Text, TextStyle} from "pixi.js";
 
 
 function createText(x, y, text, style, container) {
-  let message = new Text(text, style);
+
+  let textStyle = new TextStyle(style);
+
+  let message = new Text(text, textStyle);
 
   container.addChild(message);
   message.position.set(x, y);
