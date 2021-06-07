@@ -1,4 +1,26 @@
-function hitRectangle(rect1, rect2) {
+import {Graphics, Text} from "pixi.js";
+
+
+function createText(x, y, text, style, container) {
+  let message = new Text(text, style);
+
+  container.addChild(message);
+  message.position.set(x, y);
+  return message;
+}
+
+function createCircle(x, y, radius, color) {
+  let circle = new Graphics();
+  circle.beginFill(color);
+  circle.drawCircle(0, 0, radius);
+  circle.endFill();
+
+  circle.position.set(x, y);
+  
+  return circle;
+}
+
+function rectCollisionCheck(rect1, rect2) {
   let hit = false;
 
   rect1.centerX = rect1.x + rect1.width / 2;
@@ -29,8 +51,7 @@ function hitRectangle(rect1, rect2) {
 
   return hit;
 }
-
-
+// 
 function keyboard(keyCode) {
   var key = {};
 
@@ -48,7 +69,7 @@ function keyboard(keyCode) {
     }
 
     e.preventDefault();
-  }
+  };
 
   key.upHandler = (e) => {
     if (e.keyCode === key.code) {
@@ -58,7 +79,7 @@ function keyboard(keyCode) {
     }
 
     e.preventDefault();
-  }
+  };
 
   const downListener = key.downHandler.bind(key);
   const upListener = key.upHandler.bind(key);
@@ -73,7 +94,6 @@ function keyboard(keyCode) {
 
   return key;
 }
-
 
 function contains(entity, container) {
   let collision = undefined;
@@ -102,14 +122,60 @@ function contains(entity, container) {
     collision = "bottom";
   }
 
-  return collision
-
+  return collision;
 }
-
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function getDistance(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
 
-export {hitRectangle, keyboard, contains, randomInt}
+function circleCollisionCheck(c1, c2) {
+
+  let hit = false;
+
+  if (getDistance(c1.x, c1.y, c2.x, c2.y) < c1.width / 2 + c2.width / 2) {
+    hit = true;
+  }
+
+  return hit;
+}
+
+function circleCollisionBounce(c1, c2) {
+  let hit = false;
+  let dx, dy;
+
+  let magnitude = Math.sqrt(
+    Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2)
+  );
+
+  let combinedRad = c1.width / 2 + c2.width / 2;
+
+  if (magnitude < combinedRad) {
+    hit = true;
+
+    dx = (c2.x - c1.x) / magnitude;
+    dy = (c2.y - c1.y) / magnitude;
+
+    c1.x -= (combinedRad - magnitude) * dx;
+    c1.y -= (combinedRad - magnitude) * dy;
+  }
+
+  return hit;
+}
+
+
+export {
+  createCircle,
+  rectCollisionCheck,
+  keyboard,
+  contains,
+  randomInt,
+  circleCollisionCheck,
+  getDistance,
+  circleCollisionBounce,
+  createText,
+};
