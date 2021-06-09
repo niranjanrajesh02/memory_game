@@ -32,7 +32,7 @@ let state, gameScene, gameBg, isPaused, gameOverScene;
 let scoreScene, scoreText, missText, scoreBg;
 let numberOfNotes, noteSpeed, noteGenerateLag, timer;
 let frets, keyInputs, notes;
-let hits, misses;
+let hits, misses, hitRate;
 
 function setup() {
 
@@ -51,6 +51,8 @@ function setup() {
   scoreBg.height = DIMENSIONS.height - 10;
   scoreBg.position.set(5, 5);
   scoreBg.tint = 0x777777;
+
+  hitRate = (hits + misses) / hitRate
 
   scoreScene.addChild(scoreBg);
   scoreScene.position.set(DIMENSIONS.gameWidth, 0);
@@ -168,7 +170,7 @@ function setup() {
   notes = [];
 
   for (let i = 0; i < numberOfNotes; i++) {
-    generateNote();
+    generateNote(-1);
     
   }
 
@@ -179,18 +181,19 @@ function setup() {
   app.ticker.add((delta) => gameLoop(delta));
 }
 
-function generateNote() {
+function generateNote(n) {
   let noteOffsetX = 90,
     noteGapX = 70;
 
   let x;
 
   while (true) {
-    x = lib.randomInt(0, 6);
-    if (x != 3) {
+    x = n === -1 || n === 3 ? lib.randomInt(0, 6) : n;
+
+    if (x !== 3) {
       break;
     }
-  }  
+  }
   
   let circle = lib.createCircle(
     noteOffsetX + noteGapX * x,
@@ -198,6 +201,7 @@ function generateNote() {
     20,
     0xffffff
   );
+
   circle.vx = 0;
   circle.vy = noteSpeed;
 
@@ -216,11 +220,18 @@ function play(delta) {
   
   if (!isPaused) {
     gameBg.tint = 0xffffff;
-    timer = timer >= 0 ? --timer : noteGenerateLag;
+    timer = timer > 0 ? --timer : noteGenerateLag;
+    console.log(hitRate);
 
-    // console.log(timer)
-    if (timer === 1) {
-      generateNote();
+    if (hitRate > 0.8) {
+      noteSpeed = 16;
+      // console.log("speed increase");
+    } else {
+      noteSpeed = 5
+    }
+
+    if (timer === 0) {
+      generateNote(4);
     }
 
     frets.forEach((fret) => {
@@ -249,6 +260,7 @@ function play(delta) {
           note.clear();
           object.splice(index, 1);
           hits += 1;
+          hitRate = hits / (hits + misses)
           scoreText.text = `score: ${hits}`;
         }
       });
@@ -258,12 +270,12 @@ function play(delta) {
         object.splice(index, 1);
         // note.y = -100
         misses += 1;
+        hitRate = hits / (hits + misses);
         missText.text = `misses: ${misses}`;
       }
     });
   } else {
     gameBg.tint = 0x333333;
   }
-
 
 }
