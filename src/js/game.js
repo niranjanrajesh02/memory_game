@@ -32,7 +32,12 @@ let state, gameScene, gameBg, isPaused, gameOverScene;
 let scoreScene, scoreText, missText, hitText, scoreBg;
 let numberOfNotes, noteSpeed, noteGenerateLag, timer;
 let frets, keyInputs, notes;
-let hits, misses, hitRate;
+let hits = 0;
+let misses = 0;
+let hitRate = 0;
+let prevHitRate = 0;
+let noteCounter = 0;
+let prevNoteCounter = 0;
 
 function setup() {
   isPaused = true;
@@ -210,6 +215,7 @@ function generateNote(n) {
 
   notes.push(circle);
   console.log("note generated");
+
   gameScene.addChild(circle);
 }
 
@@ -217,34 +223,30 @@ function gameLoop(delta) {
   state(delta);
 }
 
-function hitRateMonitor(hitrate) {
+function hitRateMonitor(prevHR, curHR) {
+  console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
   let range = 0.05
-  if (hitRate < (0.7 + range) && hitRate > (0.7 - range)) {
-    return
+  noteSpeed = noteSpeed - (noteSpeed * (0.7 - curHR) * 4)
+  console.log(noteSpeed);
+  if (noteSpeed < 1) {
+    noteSpeed = 3;
   }
-  else if (hitrate > 0.7) {
-    if (noteSpeed < 20) {
-      noteSpeed += 2;
-    }
-
-  }
-  else if (hitrate < 0.7) {
-    if (noteSpeed > 2) {
-      noteSpeed -= 2
-    }
-
+  else if (noteSpeed > 23) {
+    noteSpeed = 23;
   }
 
 }
 
 function play(delta) {
-
   if (!isPaused) {
     gameBg.tint = 0xffffff;
     timer = timer > 0 ? --timer : noteGenerateLag;
-    console.log(hitRate, noteSpeed);
 
-    hitRateMonitor(hitRate);
+
+    if ((noteCounter !== prevNoteCounter) && (noteCounter % 5 === 0) && (noteCounter !== 0)) {
+      console.log("counter: ", noteCounter);
+      hitRateMonitor(prevHitRate, hitRate);
+    }
 
     if (timer === 0) {
       generateNote(-1);
@@ -257,7 +259,8 @@ function play(delta) {
         fret.fret.tint = 0x000000;
       }
     });
-
+    prevHitRate = hitRate;
+    prevNoteCounter = noteCounter;
     notes.forEach((note, index, object) => {
       note.y += note.vy * delta;
 
@@ -278,7 +281,8 @@ function play(delta) {
           hits += 1;
           hitRate = hits / (hits + misses);
           scoreText.text = `score: ${hits}`;
-          hitText.text = `${hitRate.toPrecision(3)}`
+          hitText.text = `${hitRate.toPrecision(3)}`;
+          noteCounter++;
         }
       });
 
@@ -290,9 +294,12 @@ function play(delta) {
         hitRate = hits / (hits + misses);
         missText.text = `misses: ${misses}`;
         hitText.text = `${hitRate.toPrecision(3)}`;
+        noteCounter++;
       }
     });
   } else {
     gameBg.tint = 0x333333;
   }
+
+
 }
