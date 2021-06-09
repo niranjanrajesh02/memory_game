@@ -37,7 +37,7 @@ let hits, misses, hitRate;
 function setup() {
 
   isPaused = true;
-  
+
   gameScene = new Container();
   scoreScene = new Container();
 
@@ -128,8 +128,8 @@ function setup() {
   let letters = "SDFJKL"
 
   for (let i = 0; i < 6; i++) {
-    
-    let letter = lib.createText(`${letters[i]}`, {fill: "black"}, gameScene);
+
+    let letter = lib.createText(`${letters[i]}`, { fill: "black" }, gameScene);
 
     let j = i > 2 ? i + 1 : i;
     let offsetX = 60 + 30;
@@ -171,7 +171,7 @@ function setup() {
 
   for (let i = 0; i < numberOfNotes; i++) {
     generateNote(-1);
-    
+
   }
 
   noteGenerateLag = 50;
@@ -194,7 +194,7 @@ function generateNote(n) {
       break;
     }
   }
-  
+
   let circle = lib.createCircle(
     noteOffsetX + noteGapX * x,
     lib.randomInt(-30, -500),
@@ -216,19 +216,34 @@ function gameLoop(delta) {
   state(delta);
 }
 
+function hitRateMonitor(hitrate) {
+  let range = 0.05
+  if (hitRate < (0.7 + range) && hitRate > (0.7 - range)) {
+    return
+  }
+  else if (hitrate > 0.7) {
+    if (noteSpeed < 20) {
+      noteSpeed += 2;
+    }
+
+  }
+  else if (hitrate < 0.7) {
+    if (noteSpeed > 2) {
+      noteSpeed -= 2
+    }
+
+  }
+
+}
+
 function play(delta) {
-  
+
   if (!isPaused) {
     gameBg.tint = 0xffffff;
     timer = timer > 0 ? --timer : noteGenerateLag;
-    console.log(hitRate);
+    console.log(hitRate, noteSpeed);
 
-    if (hitRate > 0.8) {
-      noteSpeed = 16;
-      // console.log("speed increase");
-    } else {
-      noteSpeed = 5
-    }
+    hitRateMonitor(hitRate);
 
     if (timer === 0) {
       generateNote(4);
@@ -253,7 +268,7 @@ function play(delta) {
             note.x,
             note.y
           ) <
-            fret.fret.height / 2 + note.width / 2 &&
+          fret.fret.height / 2 + note.width / 2 &&
           fret.isPressed
         ) {
           // console.log("hit");
