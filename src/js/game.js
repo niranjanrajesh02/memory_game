@@ -28,13 +28,16 @@ document.querySelector("#main").appendChild(app.view);
 
 loader.load(setup);
 
-let state, gameScene, gameBg, gameOverScene;
+let state, gameScene, gameBg, isPaused, gameOverScene;
 let scoreScene, scoreText, missText, scoreBg;
 let numberOfNotes, noteSpeed, noteGenerateLag, timer;
 let frets, keyInputs, notes;
 let hits, misses;
 
 function setup() {
+
+  isPaused = true;
+  
   gameScene = new Container();
   scoreScene = new Container();
 
@@ -53,12 +56,10 @@ function setup() {
   scoreScene.position.set(DIMENSIONS.gameWidth, 0);
 
   // Score Text
-  scoreText = lib.createText(0, 0, `score: ${hits}`, { fill: "black" }, scoreScene);
+  scoreText = lib.createText(`score: ${hits}`, { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
   missText = lib.createText(
-    0,
-    0,
     `misses: ${misses}`,
     { fill: "black" },
     scoreScene
@@ -70,7 +71,7 @@ function setup() {
   gameBg.width = DIMENSIONS.gameWidth;
   gameBg.height = DIMENSIONS.height;
   gameBg.position.set(0, 0);
-  gameBg.tint = 0x111111;
+  gameBg.tint = 0xffffff;
 
   gameScene.addChild(gameBg);
 
@@ -85,14 +86,14 @@ function setup() {
 
     let line = new Graphics();
 
-    line.lineStyle(2, 0xeeeeee, 1);
+    line.lineStyle(2, 0x000000, 1);
 
     line.moveTo(offsetX + i * gap, 100);
     line.lineTo(offsetX + i * gap, DIMENSIONS.height - 20);
 
     if (i == 0 || i == 7) {
       // For the last two lines
-      line.lineStyle(2, 0x444444, 1);
+      line.lineStyle(2, 0x000000, 1);
       line.moveTo(offsetX + i * gap, 20);
       line.lineTo(offsetX + i * gap, DIMENSIONS.height - 20);
     }
@@ -114,12 +115,25 @@ function setup() {
     let fret = new Sprite(Texture.WHITE);
     fret.width = 60;
     fret.height = 20;
-    fret.tint = 0xffffff;
+    fret.tint = 0x000000;
 
     fret.position.set(offsetX + i * gap, DIMENSIONS.height - 80);
     frets.push({ fret: fret, isPressed: false });
 
     gameScene.addChild(fret);
+  }
+
+  let letters = "SDFJKL"
+
+  for (let i = 0; i < 6; i++) {
+    
+    let letter = lib.createText(`${letters[i]}`, {fill: "black"}, gameScene);
+
+    let j = i > 2 ? i + 1 : i;
+    let offsetX = 60 + 30;
+    let gap = 70;
+
+    letter.position.set(offsetX - letter.width / 2 + j * gap, DIMENSIONS.height - 60);
   }
 
   // Keyboard Input
@@ -133,6 +147,12 @@ function setup() {
     lib.keyboard(75),
     lib.keyboard(76)
   );
+
+  let space = lib.keyboard(32);
+
+  space.press = () => {
+    isPaused = !isPaused;
+  }
 
   keyInputs.forEach((key, i) => {
     key.press = () => {
@@ -152,10 +172,9 @@ function setup() {
     
   }
 
-  noteGenerateLag = 100;
+  noteGenerateLag = 50;
   timer = noteGenerateLag;
 
-  notes.forEach(note => console.log(note.y))
   state = play;
   app.ticker.add((delta) => gameLoop(delta));
 }
@@ -182,9 +201,10 @@ function generateNote() {
   circle.vx = 0;
   circle.vy = noteSpeed;
 
-  circle.tint = 0xffffff;
+  circle.tint = 0x000000;
 
   notes.push(circle);
+  console.log("note generated")
   gameScene.addChild(circle);
 }
 
@@ -194,50 +214,56 @@ function gameLoop(delta) {
 
 function play(delta) {
   
-  timer = timer >= 0 ? --timer : noteGenerateLag
+  if (!isPaused) {
+    gameBg.tint = 0xffffff;
+    timer = timer >= 0 ? --timer : noteGenerateLag;
 
-  // console.log(timer)
-  if (timer === 1) {
-    generateNote();
-  }
-
-  frets.forEach((fret) => {
-    if (fret.isPressed) {
-      fret.fret.tint = 0x555555;
-    } else {
-      fret.fret.tint = 0xffffff;
+    // console.log(timer)
+    if (timer === 1) {
+      generateNote();
     }
-  });
 
-  notes.forEach((note, index, object) => {
-    note.y += note.vy * delta;
-    
-    frets.forEach(fret => {
-      if (
-        (lib.getDistance(
-          fret.fret.x + fret.fret.width / 2,
-          fret.fret.y + fret.fret.height / 2,
-          note.x,
-          note.y
-        ) <
-        fret.fret.height / 2 + note.width / 2) && fret.isPressed
-      ) {
-        console.log("hit");
+    frets.forEach((fret) => {
+      if (fret.isPressed) {
+        fret.fret.tint = 0x222222;
+      } else {
+        fret.fret.tint = 0x000000;
+      }
+    });
+
+    notes.forEach((note, index, object) => {
+      note.y += note.vy * delta;
+
+      frets.forEach((fret) => {
+        if (
+          lib.getDistance(
+            fret.fret.x + fret.fret.width / 2,
+            fret.fret.y + fret.fret.height / 2,
+            note.x,
+            note.y
+          ) <
+            fret.fret.height / 2 + note.width / 2 &&
+          fret.isPressed
+        ) {
+          // console.log("hit");
+          note.clear();
+          object.splice(index, 1);
+          hits += 1;
+          scoreText.text = `score: ${hits}`;
+        }
+      });
+
+      if (note.y + note.height / 2 > DIMENSIONS.height) {
         note.clear();
         object.splice(index, 1);
-        hits += 1
-        scoreText.text = `score: ${hits}`
+        // note.y = -100
+        misses += 1;
+        missText.text = `misses: ${misses}`;
       }
-    })
-
-    if (note.y + note.height / 2 > DIMENSIONS.height) {
-      note.clear();
-      object.splice(index, 1);
-      // note.y = -100
-      misses += 1;
-      missText.text = `misses: ${misses}`;
-    }
-  })
+    });
+  } else {
+    gameBg.tint = 0x333333;
+  }
 
 
 }
