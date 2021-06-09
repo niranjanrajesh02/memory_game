@@ -29,13 +29,12 @@ document.querySelector("#main").appendChild(app.view);
 loader.load(setup);
 
 let state, gameScene, gameBg, isPaused, gameOverScene;
-let scoreScene, scoreText, missText, scoreBg;
+let scoreScene, scoreText, missText, hitText, scoreBg;
 let numberOfNotes, noteSpeed, noteGenerateLag, timer;
 let frets, keyInputs, notes;
 let hits, misses, hitRate;
 
 function setup() {
-
   isPaused = true;
 
   gameScene = new Container();
@@ -45,14 +44,15 @@ function setup() {
   app.stage.addChild(gameScene);
 
   // Score Background
-  hits = 0; misses = 0
+  hits = 0;
+  misses = 0;
   scoreBg = new Sprite(Texture.WHITE);
   scoreBg.width = DIMENSIONS.mainWidth - DIMENSIONS.gameWidth - 10;
   scoreBg.height = DIMENSIONS.height - 10;
   scoreBg.position.set(5, 5);
   scoreBg.tint = 0x777777;
 
-  hitRate = (hits + misses) / hitRate
+  hitRate = 0;
 
   scoreScene.addChild(scoreBg);
   scoreScene.position.set(DIMENSIONS.gameWidth, 0);
@@ -61,12 +61,11 @@ function setup() {
   scoreText = lib.createText(`score: ${hits}`, { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
-  missText = lib.createText(
-    `misses: ${misses}`,
-    { fill: "black" },
-    scoreScene
-  );
+  missText = lib.createText(`misses: ${misses}`, { fill: "black" }, scoreScene);
   missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
+
+  hitText = lib.createText(`${hitRate.toPrecision(3)}`, { fill: "black" }, scoreScene);
+  hitText.position.set(scoreBg.width / 2 - hitText.width / 2, 150);
 
   // Game Background
   gameBg = new Sprite(Texture.WHITE);
@@ -125,17 +124,19 @@ function setup() {
     gameScene.addChild(fret);
   }
 
-  let letters = "SDFJKL"
+  let letters = "SDFJKL";
 
   for (let i = 0; i < 6; i++) {
-
     let letter = lib.createText(`${letters[i]}`, { fill: "black" }, gameScene);
 
     let j = i > 2 ? i + 1 : i;
     let offsetX = 60 + 30;
     let gap = 70;
 
-    letter.position.set(offsetX - letter.width / 2 + j * gap, DIMENSIONS.height - 60);
+    letter.position.set(
+      offsetX - letter.width / 2 + j * gap,
+      DIMENSIONS.height - 60
+    );
   }
 
   // Keyboard Input
@@ -154,7 +155,7 @@ function setup() {
 
   space.press = () => {
     isPaused = !isPaused;
-  }
+  };
 
   keyInputs.forEach((key, i) => {
     key.press = () => {
@@ -166,12 +167,12 @@ function setup() {
   });
 
   // Notes
-  numberOfNotes = 1; noteSpeed = 5
+  numberOfNotes = 1;
+  noteSpeed = 5;
   notes = [];
 
   for (let i = 0; i < numberOfNotes; i++) {
     generateNote(-1);
-
   }
 
   noteGenerateLag = 50;
@@ -208,7 +209,7 @@ function generateNote(n) {
   circle.tint = 0x000000;
 
   notes.push(circle);
-  console.log("note generated")
+  console.log("note generated");
   gameScene.addChild(circle);
 }
 
@@ -246,7 +247,7 @@ function play(delta) {
     hitRateMonitor(hitRate);
 
     if (timer === 0) {
-      generateNote(4);
+      generateNote(-1);
     }
 
     frets.forEach((fret) => {
@@ -275,8 +276,9 @@ function play(delta) {
           note.clear();
           object.splice(index, 1);
           hits += 1;
-          hitRate = hits / (hits + misses)
+          hitRate = hits / (hits + misses);
           scoreText.text = `score: ${hits}`;
+          hitText.text = `${hitRate.toPrecision(3)}`
         }
       });
 
@@ -287,10 +289,10 @@ function play(delta) {
         misses += 1;
         hitRate = hits / (hits + misses);
         missText.text = `misses: ${misses}`;
+        hitText.text = `${hitRate.toPrecision(3)}`;
       }
     });
   } else {
     gameBg.tint = 0x333333;
   }
-
 }
