@@ -234,7 +234,6 @@ function hitRateMonitor(prevHR, curHR) {
   else if (noteSpeed > 23) {
     noteSpeed = 23;
   }
-
 }
 
 function play(delta) {
