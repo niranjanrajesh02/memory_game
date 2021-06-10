@@ -134,11 +134,9 @@ function setup() {
 
   for (let i = 0; i < 6; i++) {
     let letter = lib.createText(`${letters[i]}`, { fill: "black" }, gameScene);
-
     let j = i > 2 ? i + 1 : i;
     let offsetX = 60 + 30;
     let gap = 70;
-
     letter.position.set(
       offsetX - letter.width / 2 + j * gap,
       DIMENSIONS.height - 60
@@ -226,8 +224,7 @@ function gameLoop(delta) {
 
 function hitRateMonitor(prevHR, curHR) {
   console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
-  let range = 0.05
-  noteSpeed = noteSpeed - (noteSpeed * (0.7 - curHR) * 4)
+  noteSpeed = Math.round(noteSpeed - (noteSpeed * (0.7 - curHR) * 4))
   console.log(noteSpeed);
   if (noteSpeed < 1) {
     noteSpeed = 3;
@@ -235,19 +232,31 @@ function hitRateMonitor(prevHR, curHR) {
   else if (noteSpeed > 23) {
     noteSpeed = 23;
   }
+  //changing noteGenerateLag
+  noteGenerateLag = Math.round((-2.3 * noteSpeed) + 58.9)
+  if (noteGenerateLag > 60) {
+    noteGenerateLag = 60;
+  }
+  else if (noteGenerateLag < 10) {
+    noteGenerateLag = 10;
+  }
+  console.log(noteGenerateLag);
 }
 
 function play(delta) {
+
   if (!isPaused) {
     gameBg.tint = 0xffffff;
     timer = timer > 0 ? --timer : noteGenerateLag;
-
 
     if ((noteCounter !== prevNoteCounter) && (noteCounter % 5 === 0) && (noteCounter !== 0)) {
       console.log("counter: ", noteCounter);
       hitRateMonitor(prevHitRate, hitRate);
     }
 
+    // noteGenerateLag = 30;
+    // noteSpeed = 10;
+    console.log(noteSpeed, noteGenerateLag);
     if (timer === 0) {
       generateNote(-1);
     }
@@ -300,7 +309,6 @@ function play(delta) {
   } else {
     gameBg.tint = 0x333333;
   }
-
 
 }
 
