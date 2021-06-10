@@ -4,3 +4,12 @@
 4. Reaction time measure
 5. Authentication
 6. Routing
+7. Disable multiple keypress
+
+
+# Database / per game
+ - hits
+ - misses
+ - hitrate
+ - reaction time
+ - the sequence

@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
-import * as lib from "./lib";
+
+import * as lib from "../lib/lib";
 
 let loader = PIXI.Loader.shared;
 
@@ -24,7 +25,7 @@ let app = new Application({
   resolution: 1,
 });
 
-document.querySelector("#main").appendChild(app.view);
+// document.querySelector("#main").appendChild(app.view);
 
 loader.load(setup);
 
@@ -302,3 +303,6 @@ function play(delta) {
 
 
 }
+
+
+export default app;
