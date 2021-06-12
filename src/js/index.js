@@ -1,5 +1,6 @@
 import { provider, auth } from "../lib/firebase";
 import app from "./game";
+import * as game from "./game";
 
 import "../css/global.css";
 
@@ -34,4 +35,6 @@ auth.onAuthStateChanged(user => {
         signedOut.hidden = false;
         userDetails.innerHTML = ``;
     }
-})
+});
+
+console.log(game);

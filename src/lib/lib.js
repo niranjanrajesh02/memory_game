@@ -4,7 +4,8 @@ import {Graphics, Text, TextStyle} from "pixi.js";
 function createText(text, style, container) {
 
   let textStyle = new TextStyle(style);
-
+  // textStyle.fontFamily = 'pixel, sans-serif';
+  // textStyle.fontSize = 20;
   let message = new Text(text, textStyle);
 
   container.addChild(message);

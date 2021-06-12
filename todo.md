@@ -1,15 +1,14 @@
-1. Finish up the hitrate algorithm
-2. Random sequence generator upon login
-3. Embed the sequence between random bits (columns where balls fall)
-4. Reaction time measure
-5. Authentication
-6. Routing
+Sunday:
+
+2. Embed the sequence between random bits (columns where balls fall)
+6. Games (blocks) and Levels (sub-block)
+
+Saturday:
+Argha
+  5. ~~Authentication~~
+  4. Reaction time measure
+Niranjan
+  1. Finish up the hitrate algorithm
+
+
 7. Disable multiple keypress
-
-
-# Database / per game
- - hits
- - misses
- - hitrate
- - reaction time
- - the sequence
