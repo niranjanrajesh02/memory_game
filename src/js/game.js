@@ -202,7 +202,7 @@ function generateNote(n) {
 
   let circle = lib.createCircle(
     noteOffsetX + noteGapX * x,
-    lib.randomInt(-30, -500),
+    lib.randomInt(-500, -500),
     20,
     0xffffff
   );
@@ -231,8 +231,8 @@ function hitRateMonitor(prevHR, curHR) {
   // else if (curHR > 0.7) {
   //   alpha = 1.5;
   // }
-  noteSpeed = Math.round(noteSpeed - ((0.7 - curHR) * alpha))
-  noteGenerateLag = Math.round(noteGenerateLag + ((0.7 - curHR) * 15))
+  noteSpeed = Math.floor(noteSpeed - ((0.7 - curHR) * alpha))
+  noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * 25))
 
   if (noteSpeed < 3) {
     noteSpeed = 3;
@@ -257,7 +257,7 @@ function play(delta) {
     gameBg.tint = 0xffffff;
     timer = timer > 0 ? --timer : noteGenerateLag;
 
-    if ((noteCounter !== prevNoteCounter) && (noteCounter % 3 === 0) && (noteCounter !== 0)) {
+    if ((noteCounter !== prevNoteCounter) && (noteCounter % 20 === 0) && (noteCounter !== 0)) {
       console.log("counter: ", noteCounter);
       hitRateMonitor(prevHitRate, hitRate);
       notes.forEach((note) => {
