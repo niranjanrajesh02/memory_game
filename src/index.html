@@ -7,11 +7,29 @@
   <title>Memory Game</title>
 </head>
 <body>
-  
+  <nav>
+    <ul style="font-size: large; font-family: 'pixel', sans-serif; list-style-type: none; display: flex; justify-content: space-between;">
+      <li style="padding: 1rem;">MEMORY GAME</li>
+      <li style="padding: 1rem; display: flex;">
+        <section id="signedOut">
+          <button id="signInBtn">login</button>
+        </section>
+
+        <section id="signedIn">
+          <div style="display: flex; gap: 2rem; align-items: flex-start;">
+            <div id="userDetails"></div>
+            <button id="signOutBtn">logout</button>
+          </div>
+        </section>
+      </li>
+    </ul>
+  </nav>
   <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100vh;">
     <div id="main"></div>
   </div>
+  
+  <button id="finishBtn" style="width: 100%; text-align: center;">Finish Session</button>
 
-  <script src="./js/game.js" defer></script>
+  <script src="./js/index.js" defer></script>
 </body>
 </html>

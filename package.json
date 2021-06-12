@@ -13,6 +13,7 @@
     "parcel-bundler": "^1.12.5"
   },
   "dependencies": {
+    "firebase": "^8.6.5",
     "pixi.js": "^6.0.4"
   }
 }

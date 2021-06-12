@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
-import * as lib from "./lib";
+
+import * as lib from "../lib/lib";
 
 let loader = PIXI.Loader.shared;
 
@@ -15,6 +16,7 @@ let DIMENSIONS = {
   height: 600,
   mainWidth: 800,
   gameWidth: 600,
+  antialias: false,
 };
 
 let app = new Application({
@@ -24,28 +26,45 @@ let app = new Application({
   resolution: 1,
 });
 
-document.querySelector("#main").appendChild(app.view);
+// document.querySelector("#main").appendChild(app.view);
 
 loader.load(setup);
 
-let state, gameScene, gameBg, isPaused, gameOverScene;
-let scoreScene, scoreText, missText, scoreBg;
+let state, gameScene, gameBg, isPaused;
+let gameOverBg, gameOverText, gameOverScene, restartButton, restart;
+let scoreScene, scoreText, missText, hitText, scoreBg;
 let numberOfNotes, noteSpeed, noteGenerateLag, timer;
 let frets, keyInputs, notes;
-let hits, misses;
+
+var hits = 0;
+var misses = 0;
+var hitRate = 0;
+var prevHitRate = 0;
+var noteCounter = 0;
+var prevNoteCounter = 0;
+var isGameOver;
+var reactionTimes = [];
+var avgReactionTime = 0;
+// const gameOver = new Promise();
 
 function setup() {
-
   isPaused = true;
-  
+  restart = false;
+  isGameOver = false;
+
   gameScene = new Container();
   scoreScene = new Container();
+  gameOverScene = new Container();
 
   app.stage.addChild(scoreScene);
   app.stage.addChild(gameScene);
+  app.stage.addChild(gameOverScene);
 
   // Score Background
-  hits = 0; misses = 0
+  hits = 0;
+  misses = 0;
+  hitRate = 0;
+
   scoreBg = new Sprite(Texture.WHITE);
   scoreBg.width = DIMENSIONS.mainWidth - DIMENSIONS.gameWidth - 10;
   scoreBg.height = DIMENSIONS.height - 10;
@@ -59,12 +78,51 @@ function setup() {
   scoreText = lib.createText(`score: ${hits}`, { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
-  missText = lib.createText(
-    `misses: ${misses}`,
+  missText = lib.createText(`misses: ${misses}`, { fill: "black" }, scoreScene);
+  missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
+
+  hitText = lib.createText(
+    `${hitRate.toPrecision(3)}`,
     { fill: "black" },
     scoreScene
   );
-  missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
+  hitText.position.set(scoreBg.width / 2 - hitText.width / 2, 150);
+
+  // Game Over
+  gameOverBg = new Sprite(Texture.WHITE);
+  gameOverBg.width = DIMENSIONS.gameWidth;
+  gameOverBg.height = DIMENSIONS.height;
+  gameOverBg.position.set(0, 0);
+  gameOverBg.tint = 0xffffff;
+
+  restartButton = new Sprite(Texture.WHITE);
+  restartButton.width = 25;
+  restartButton.height = 25;
+  restartButton.position.set(0, 0);
+  restartButton.tint = 0x000000;
+  restartButton.interactive = true;
+  restartButton.on("mouseup", () => {
+    restart = true;
+  });
+
+  gameOverScene.addChild(gameOverBg);
+  gameOverScene.addChild(restartButton);
+
+  gameOverScene.visible = false;
+
+  // Game Over Text
+  gameOverText = lib.createText(
+    `GAME OVER`,
+    {
+      fill: "black",
+      fontFamily: "pixel, sans-serif",
+    },
+    gameOverScene
+  );
+  gameOverText.position.set(
+    gameOverBg.width / 2 - gameOverText.width / 2,
+    gameOverBg.height / 2 - gameOverText.height / 2
+  );
 
   // Game Background
   gameBg = new Sprite(Texture.WHITE);
@@ -123,17 +181,21 @@ function setup() {
     gameScene.addChild(fret);
   }
 
-  let letters = "SDFJKL"
+  let letters = "SDFJKL";
 
   for (let i = 0; i < 6; i++) {
-    
-    let letter = lib.createText(`${letters[i]}`, {fill: "black"}, gameScene);
-
+    let letter = lib.createText(
+      `${letters[i]}`,
+      { fill: "black", fontFamily: "pixel, sans-serif" },
+      gameScene
+    );
     let j = i > 2 ? i + 1 : i;
     let offsetX = 60 + 30;
     let gap = 70;
-
-    letter.position.set(offsetX - letter.width / 2 + j * gap, DIMENSIONS.height - 60);
+    letter.position.set(
+      offsetX - letter.width / 2 + j * gap,
+      DIMENSIONS.height - 60
+    );
   }
 
   // Keyboard Input
@@ -149,10 +211,15 @@ function setup() {
   );
 
   let space = lib.keyboard(32);
+  let esc = lib.keyboard(27);
 
   space.press = () => {
     isPaused = !isPaused;
-  }
+  };
+
+  esc.press = () => {
+    isGameOver = true;
+  };
 
   keyInputs.forEach((key, i) => {
     key.press = () => {
@@ -164,12 +231,12 @@ function setup() {
   });
 
   // Notes
-  numberOfNotes = 1; noteSpeed = 5
+  numberOfNotes = 1;
+  noteSpeed = 5;
   notes = [];
 
   for (let i = 0; i < numberOfNotes; i++) {
-    generateNote();
-    
+    generateNote(-1);
   }
 
   noteGenerateLag = 50;
@@ -179,32 +246,36 @@ function setup() {
   app.ticker.add((delta) => gameLoop(delta));
 }
 
-function generateNote() {
+function generateNote(n) {
   let noteOffsetX = 90,
     noteGapX = 70;
 
   let x;
 
   while (true) {
-    x = lib.randomInt(0, 6);
-    if (x != 3) {
+    x = n === -1 || n === 3 ? lib.randomInt(0, 6) : n;
+
+    if (x !== 3) {
       break;
     }
-  }  
-  
+  }
+
   let circle = lib.createCircle(
     noteOffsetX + noteGapX * x,
-    lib.randomInt(-30, -500),
+    lib.randomInt(-100, -100),
     20,
     0xffffff
   );
-  circle.vx = 0;
-  circle.vy = noteSpeed;
+
+  circle["vx"] = 0;
+  circle["vy"] = noteSpeed;
 
   circle.tint = 0x000000;
+  circle["isInsideFretTime"] = 0;
 
   notes.push(circle);
-  console.log("note generated")
+  // console.log(circle);
+
   gameScene.addChild(circle);
 }
 
@@ -212,15 +283,60 @@ function gameLoop(delta) {
   state(delta);
 }
 
+function hitRateMonitor(prevHR, curHR) {
+  // console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
+  noteSpeed = Math.round(noteSpeed - noteSpeed * (0.7 - curHR) * 4);
+  // console.log(noteSpeed);
+  if (noteSpeed < 1) {
+    noteSpeed = 3;
+  } else if (noteSpeed > 23) {
+    noteSpeed = 23;
+  }
+  //changing noteGenerateLag
+  noteGenerateLag = Math.round(-2.3 * noteSpeed + 58.9);
+  if (noteGenerateLag > 60) {
+    noteGenerateLag = 60;
+  } else if (noteGenerateLag < 10) {
+    noteGenerateLag = 10;
+  }
+  // console.log(noteGenerateLag);
+}
+
+function collisionCheck(fret, note) {
+  return (
+    lib.getDistance(
+      fret.fret.x + fret.fret.width / 2,
+      fret.fret.y + fret.fret.height / 2,
+      note.x,
+      note.y
+    ) <
+    fret.fret.height / 2 + note.width / 2
+  );
+}
+
 function play(delta) {
-  
+  gameScene.visible = true;
+  gameOverScene.visible = false;
+
   if (!isPaused) {
     gameBg.tint = 0xffffff;
-    timer = timer >= 0 ? --timer : noteGenerateLag;
+    timer = timer > 0 ? --timer : noteGenerateLag;
 
-    // console.log(timer)
-    if (timer === 1) {
-      generateNote();
+    // if ((noteCounter !== prevNoteCounter) && (noteCounter % 5 === 0) && (noteCounter !== 0)) {
+    //   console.log("counter: ", noteCounter);
+    //   hitRateMonitor(prevHitRate, hitRate);
+
+    //   // notes.forEach((note) => {
+    //   //   note.vy = noteSpeed
+    //   // })
+
+    // }
+
+    // noteGenerateLag = 30;
+    // noteSpeed = 10;
+    // console.log(noteSpeed, noteGenerateLag);
+    if (timer === 0) {
+      generateNote(-1);
     }
 
     frets.forEach((fret) => {
@@ -231,25 +347,34 @@ function play(delta) {
       }
     });
 
+    prevHitRate = hitRate;
+    prevNoteCounter = noteCounter;
+
     notes.forEach((note, index, object) => {
       note.y += note.vy * delta;
 
       frets.forEach((fret) => {
-        if (
-          lib.getDistance(
-            fret.fret.x + fret.fret.width / 2,
-            fret.fret.y + fret.fret.height / 2,
-            note.x,
-            note.y
-          ) <
-            fret.fret.height / 2 + note.width / 2 &&
-          fret.isPressed
-        ) {
+        if (collisionCheck(fret, note)) {
+          if (!note.isInsideFretTime) {
+            note.isInsideFretTime = new Date().valueOf();
+          }
+
+          if (fret.isPressed) {
+            note.clear();
+            object.splice(index, 1);
+            hits += 1;
+
+            hitRate = hits / (hits + misses);
+            scoreText.text = `score: ${hits}`;
+            hitText.text = `${hitRate.toPrecision(3)}`;
+            noteCounter++;
+            reactionTimes.push(new Date().valueOf() - note.isInsideFretTime);
+            console.log(
+              `reaction time ${new Date().valueOf() - note.isInsideFretTime}ms`
+            );
+          }
+
           // console.log("hit");
-          note.clear();
-          object.splice(index, 1);
-          hits += 1;
-          scoreText.text = `score: ${hits}`;
         }
       });
 
@@ -258,12 +383,54 @@ function play(delta) {
         object.splice(index, 1);
         // note.y = -100
         misses += 1;
+        hitRate = hits / (hits + misses);
         missText.text = `misses: ${misses}`;
+        hitText.text = `${hitRate.toPrecision(3)}`;
+        noteCounter++;
       }
     });
   } else {
     gameBg.tint = 0x333333;
   }
 
-
+  if (isGameOver) {
+    state = end;
+  }
 }
+
+function end(delta) {
+  gameScene.visible = false;
+  gameOverScene.visible = true;
+
+
+  notes.forEach((note) => {
+    note.clear();
+  });
+
+  notes = [];
+
+  if (restart) {
+    hits = 0;
+    misses = 0;
+    hitRate = 0;
+
+    scoreText.text = `score: ${hits}`;
+    hitText.text = `${hitRate.toPrecision(3)}`;
+    missText.text = `misses: ${misses}`;
+    reactionTimes = [];
+
+    isGameOver = false;
+    restart = false;
+    isPaused = true;
+    state = play;
+  }
+}
+
+export {
+  hits,
+  misses,
+  hitRate,
+  isGameOver,
+  reactionTimes
+};
+export default app;
