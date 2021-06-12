@@ -38,6 +38,7 @@ let hitRate = 0;
 let prevHitRate = 0;
 let noteCounter = 0;
 let prevNoteCounter = 0;
+let reactionTime = 0;
 
 function setup() {
   isPaused = true;
@@ -223,27 +224,35 @@ function gameLoop(delta) {
 
 function hitRateMonitor(prevHR, curHR) {
   console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
-  noteSpeed = Math.round(noteSpeed - (noteSpeed * (0.7 - curHR) * 4))
-  console.log(noteSpeed);
-  if (noteSpeed < 1) {
+  let alpha = 3;
+  // if (curHR < 0.7 && curHR > 0.5) {
+  //   alpha = 4;
+  // }
+  // else if (curHR > 0.7) {
+  //   alpha = 1.5;
+  // }
+  noteSpeed = Math.round(noteSpeed - (noteSpeed * (0.7 - curHR) * alpha))
+  noteGenerateLag = Math.round(noteGenerateLag + (noteGenerateLag * (0.7 - curHR) * alpha))
+
+  if (noteSpeed < 3) {
     noteSpeed = 3;
   }
-  else if (noteSpeed > 23) {
-    noteSpeed = 23;
+  else if (noteSpeed > 18) {
+    noteSpeed = 18;
   }
   //changing noteGenerateLag
-  noteGenerateLag = Math.round((-2.3 * noteSpeed) + 58.9)
-  if (noteGenerateLag > 60) {
-    noteGenerateLag = 60;
+  // noteGenerateLag = Math.round((-2.3 * noteSpeed) + 58.9)
+  if (noteGenerateLag > 55) {
+    noteGenerateLag = 55;
   }
   else if (noteGenerateLag < 10) {
     noteGenerateLag = 10;
   }
+  console.log(noteSpeed);
   console.log(noteGenerateLag);
 }
 
 function play(delta) {
-
   if (!isPaused) {
     gameBg.tint = 0xffffff;
     timer = timer > 0 ? --timer : noteGenerateLag;
@@ -254,8 +263,8 @@ function play(delta) {
     }
 
     // noteGenerateLag = 30;
-    // noteSpeed = 10;
-    console.log(noteSpeed, noteGenerateLag);
+    // noteSpeed = 11;
+    // console.log(noteSpeed, noteGenerateLag);
     if (timer === 0) {
       generateNote(-1);
     }
