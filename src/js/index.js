@@ -14,8 +14,6 @@ const finishBtn = document.getElementById("finishBtn");
 
 const userDetails = document.getElementById("userDetails");
 
-document.querySelector("#main").appendChild(app.view);
-
 signInBtn.onclick = () => {
     auth.signInWithPopup(provider)
         .then(res => {
@@ -73,3 +71,4 @@ auth.onAuthStateChanged(user => {
 });
 
 console.log(game);
+document.querySelector("#main").appendChild(app.view);
