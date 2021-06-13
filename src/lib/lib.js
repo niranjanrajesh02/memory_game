@@ -1,4 +1,4 @@
-import {Graphics, Text, TextStyle} from "pixi.js";
+import { Graphics, Text, TextStyle } from "pixi.js";
 
 
 function createText(text, style, container) {
@@ -19,7 +19,7 @@ function createCircle(x, y, radius, color) {
   circle.endFill();
 
   circle.position.set(x, y);
-  
+
   return circle;
 }
 
@@ -170,6 +170,75 @@ function circleCollisionBounce(c1, c2) {
   return hit;
 }
 
+// makes a sub-block: x1 SEQ x2 SEQ x3 SEQ x4
+function subBlockGen(passSeq) {
+  const possibleItems = ["S", "D", "F", "J", "K", "L"];
+  let masterSeq = [];
+  let counter = 18;
+  let randomIndex = -1;
+  let x1, x2, x3, x4;
+  // adds random values at x1
+  x1 = Math.floor(Math.random() * counter) //random value from 0-18
+  for (let i = 0; i < x1; i++) {
+    do {
+      randomIndex = Math.floor(Math.random() * possibleItems.length);
+    }
+    while (randomIndex > -1 && masterSeq[masterSeq.length - 1] === possibleItems[randomIndex]);
+    masterSeq.push(possibleItems[randomIndex])
+  }
+  //adds pasSeq after x1
+  passSeq.forEach(element => {
+    masterSeq.push(element)
+  });
+
+  //adds random values at x2
+  counter -= x1;
+  if (counter >= 0) {
+    x2 = Math.floor(Math.random() * counter)
+    for (let i = 0; i < x2; i++) {
+      do {
+        randomIndex = Math.floor(Math.random() * possibleItems.length);
+      }
+      while (randomIndex > -1 && masterSeq[masterSeq.length - 1] === possibleItems[randomIndex]);
+      masterSeq.push(possibleItems[randomIndex])
+    }
+  }
+  passSeq.forEach(element => {
+    masterSeq.push(element)
+  });
+
+  //adds random values at x3
+  counter -= x2;
+  if (counter >= 0) {
+    x3 = Math.floor(Math.random() * counter)
+    for (let i = 0; i < x3; i++) {
+      do {
+        randomIndex = Math.floor(Math.random() * possibleItems.length);
+      }
+      while (randomIndex > -1 && masterSeq[masterSeq.length - 1] === possibleItems[randomIndex]);
+      masterSeq.push(possibleItems[randomIndex])
+    }
+  }
+  passSeq.forEach(element => {
+    masterSeq.push(element)
+  });
+
+  //adds random values at x4
+  counter -= x3;
+  if (counter >= 0) {
+    x4 = counter
+    for (let i = 0; i < x4; i++) {
+      do {
+        randomIndex = Math.floor(Math.random() * possibleItems.length);
+      }
+      while (randomIndex > -1 && masterSeq[masterSeq.length - 1] === possibleItems[randomIndex]);
+      masterSeq.push(possibleItems[randomIndex])
+    }
+  }
+  return (masterSeq)
+}
+
+
 export {
   createCircle,
   rectCollisionCheck,
@@ -180,4 +249,5 @@ export {
   getDistance,
   circleCollisionBounce,
   createText,
+  subBlockGen
 };

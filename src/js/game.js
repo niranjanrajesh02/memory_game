@@ -46,7 +46,7 @@ let reactionTimes = [];
 let avgReactionTime = 0;
 
 let indexForNotes = 0;
-let obj = {"S": 0, "D": 1, "F": 2, "J": 4, "K": 5, "L": 6};  // Note to integer conversion
+let obj = { "S": 0, "D": 1, "F": 2, "J": 4, "K": 5, "L": 6 };  // Note to integer conversion
 let passSequence = [
   "S",
   "D",
@@ -75,6 +75,9 @@ let passSequence = [
   "K",
   "L",
   "D",
+  "S",
+  "L",
+  "S"
 ]; // Password sequence for the current user.
 
 
@@ -278,10 +281,12 @@ function setup() {
 }
 
 function noteSequence() {
+  let subBlock = lib.subBlockGen(passSequence);
+  console.log(subBlock);
   if (indexForNotes > passSequence.length - 1) {
     // isGameOver = true;
   } else {
-    generateNote(obj[passSequence[indexForNotes]]);
+    generateNote(obj[subBlock[indexForNotes]]);
     indexForNotes++;
   }
 }
@@ -435,7 +440,7 @@ function play(delta) {
           }
         }
       });
-      
+
       // Checks if ball is outside the boundry.
       if (note.y + note.height / 2 > DIMENSIONS.height) {
         note.clear();
@@ -447,7 +452,7 @@ function play(delta) {
         noteCounter++;
       }
     });
-  
+
   } else {
     gameBg.tint = 0x333333;
   }
