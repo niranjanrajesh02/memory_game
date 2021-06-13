@@ -22,7 +22,6 @@ let DIMENSIONS = {
 let app = new Application({
   width: DIMENSIONS.mainWidth,
   height: DIMENSIONS.height,
-  antialias: true,
   resolution: 1,
 });
 
@@ -36,16 +35,26 @@ let scoreScene, scoreText, missText, hitText, scoreBg;
 let numberOfNotes, noteSpeed, noteGenerateLag, timer;
 let frets, keyInputs, notes;
 
-var hits = 0;
-var misses = 0;
-var hitRate = 0;
-var prevHitRate = 0;
-var noteCounter = 0;
-var prevNoteCounter = 0;
-var isGameOver;
-var reactionTimes = [];
-var avgReactionTime = 0;
-// const gameOver = new Promise();
+let hits = 0;
+let misses = 0;
+let hitRate = 0;
+let prevHitRate = 0;
+let noteCounter = 0;
+let prevNoteCounter = 0;
+let isGameOver;
+let reactionTimes = [];
+let avgReactionTime = 0;
+
+let indexForNotes = 0;
+let obj = { "S": 0, "D": 1, "F": 2, "J": 4, "K": 5, "L": 6 };  // Note to integer conversion
+let passSequence = []; // Password sequence for the current user.
+let sequence;
+
+const setPassSequence = (seq) => {
+  passSequence = seq;
+  sequence = lib.subBlockGen(passSequence);
+  console.log(sequence);
+}
 
 function setup() {
   isPaused = true;
@@ -231,21 +240,33 @@ function setup() {
   });
 
   // Notes
-  numberOfNotes = 1;
+  numberOfNotes = 0;
   noteSpeed = 5;
   notes = [];
 
-  for (let i = 0; i < numberOfNotes; i++) {
-    generateNote(-1);
-  }
+  // for (let i = 0; i < numberOfNotes; i++) {
+  //   generateNote(-1);
+  // }
 
   noteGenerateLag = 50;
-  timer = noteGenerateLag;
+  timer = 1;
 
   state = play;
   app.ticker.add((delta) => gameLoop(delta));
 }
 
+function noteSequence() {
+  if (indexForNotes > sequence.length - 1) {
+    // isGameOver = true;
+  } else {
+    if (sequence)
+
+    generateNote(obj[sequence[indexForNotes]]);
+    indexForNotes++;
+  }
+}
+
+// If n === -1 or 3: random note; 1-2 and 4-6: appropriate column
 function generateNote(n) {
   let noteOffsetX = 90,
     noteGapX = 70;
@@ -284,22 +305,27 @@ function gameLoop(delta) {
 }
 
 function hitRateMonitor(prevHR, curHR) {
-  // console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
-  noteSpeed = Math.round(noteSpeed - noteSpeed * (0.7 - curHR) * 4);
-  // console.log(noteSpeed);
-  if (noteSpeed < 1) {
+  console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
+  let alpha = 10;
+
+  noteSpeed = Math.floor(noteSpeed - ((0.7 - curHR) * alpha))
+  noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * 25))
+
+  if (noteSpeed < 3) {
     noteSpeed = 3;
-  } else if (noteSpeed > 23) {
-    noteSpeed = 23;
+  }
+  else if (noteSpeed > 15) {
+    noteSpeed = 15;
   }
   //changing noteGenerateLag
-  noteGenerateLag = Math.round(-2.3 * noteSpeed + 58.9);
-  if (noteGenerateLag > 60) {
-    noteGenerateLag = 60;
-  } else if (noteGenerateLag < 10) {
-    noteGenerateLag = 10;
+  if (noteGenerateLag > 55) {
+    noteGenerateLag = 55;
   }
-  // console.log(noteGenerateLag);
+  else if (noteGenerateLag < 20) {
+    noteGenerateLag = 20;
+  }
+  console.log(noteSpeed);
+  console.log(noteGenerateLag);
 }
 
 function collisionCheck(fret, note) {
@@ -319,26 +345,37 @@ function play(delta) {
   gameOverScene.visible = false;
 
   if (!isPaused) {
-    gameBg.tint = 0xffffff;
-    timer = timer > 0 ? --timer : noteGenerateLag;
 
-    // if ((noteCounter !== prevNoteCounter) && (noteCounter % 5 === 0) && (noteCounter !== 0)) {
-    //   console.log("counter: ", noteCounter);
-    //   hitRateMonitor(prevHitRate, hitRate);
-
-    //   // notes.forEach((note) => {
-    //   //   note.vy = noteSpeed
-    //   // })
-
-    // }
-
-    // noteGenerateLag = 30;
-    // noteSpeed = 10;
-    // console.log(noteSpeed, noteGenerateLag);
-    if (timer === 0) {
-      generateNote(-1);
+    if (indexForNotes > sequence.length - 1 && notes.length === 0) {
+      if (timer === 0) {
+        isGameOver = true;
+      }
     }
 
+    if (
+      noteCounter !== prevNoteCounter &&
+      noteCounter % 20 === 0 &&
+      noteCounter !== 0
+    ) {
+      console.log("counter: ", noteCounter);
+      hitRateMonitor(prevHitRate, hitRate);
+      notes.forEach((note) => {
+        note.vy = noteSpeed;
+      });
+    }
+
+    gameBg.tint = 0xffffff;
+
+    // Timer loop, timer is a decerement counter which ranges between noteGenerateLag and 0,
+    // and when it hits 0, it generates a new note and goes back to noteGenerateLag to start decerementing again
+    timer = timer > 0 ? --timer : noteGenerateLag;
+
+    if (timer === 0) {
+      // generateNote(-1);
+      noteSequence();
+    }
+
+    // Fret press.
     frets.forEach((fret) => {
       if (fret.isPressed) {
         fret.fret.tint = 0x222222;
@@ -350,11 +387,14 @@ function play(delta) {
     prevHitRate = hitRate;
     prevNoteCounter = noteCounter;
 
+    // For each note check if it is colliding with any fret.
     notes.forEach((note, index, object) => {
       note.y += note.vy * delta;
 
       frets.forEach((fret) => {
         if (collisionCheck(fret, note)) {
+
+          // The reaction time, this is the epoch time when note enters the fret
           if (!note.isInsideFretTime) {
             note.isInsideFretTime = new Date().valueOf();
           }
@@ -368,20 +408,18 @@ function play(delta) {
             scoreText.text = `score: ${hits}`;
             hitText.text = `${hitRate.toPrecision(3)}`;
             noteCounter++;
-            reactionTimes.push(new Date().valueOf() - note.isInsideFretTime);
-            console.log(
-              `reaction time ${new Date().valueOf() - note.isInsideFretTime}ms`
-            );
-          }
 
-          // console.log("hit");
+            // This subtracts the time when the user presses the corresponding fret to 
+            // with the previously taken time
+            reactionTimes.push(new Date().valueOf() - note.isInsideFretTime);
+          }
         }
       });
 
+      // Checks if ball is outside the boundry.
       if (note.y + note.height / 2 > DIMENSIONS.height) {
         note.clear();
         object.splice(index, 1);
-        // note.y = -100
         misses += 1;
         hitRate = hits / (hits + misses);
         missText.text = `misses: ${misses}`;
@@ -389,6 +427,7 @@ function play(delta) {
         noteCounter++;
       }
     });
+
   } else {
     gameBg.tint = 0x333333;
   }
@@ -413,6 +452,12 @@ function end(delta) {
     hits = 0;
     misses = 0;
     hitRate = 0;
+    prevHitRate = 0;
+    prevNoteCounter = 0;
+    noteCounter = 0;
+    indexForNotes = 0;
+    noteGenerateLag = 50;
+    noteSpeed = 5;
 
     scoreText.text = `score: ${hits}`;
     hitText.text = `${hitRate.toPrecision(3)}`;
@@ -431,6 +476,7 @@ export {
   misses,
   hitRate,
   isGameOver,
-  reactionTimes
+  reactionTimes,
+  setPassSequence,
 };
 export default app;
