@@ -285,9 +285,9 @@ function noteSequence() {
     generateNote(obj[passSequence[indexForNotes]]);
     indexForNotes++;
   }
-  
 }
 
+// If n === -1 or 3: random note; 1-2 and 4-6: appropriate column
 function generateNote(n) {
   let noteOffsetX = 90,
     noteGapX = 70;
@@ -375,7 +375,7 @@ function play(delta) {
     timer = timer > 0 ? --timer : noteGenerateLag;
 
     if (timer === 0) {
-      // generateNote(1);
+      // generateNote(-1);
       noteSequence();
     }
 

@@ -6,9 +6,9 @@ Sunday:
 Saturday:
 Argha
   5. ~~Authentication~~
-  4. Reaction time measure
+  4. ~~Reaction time measure~~
 Niranjan
-  1. Finish up the hitrate algorithm
+  1. ~~Finish up the hitrate algorithm~~
 
 
 7. Disable multiple keypress
