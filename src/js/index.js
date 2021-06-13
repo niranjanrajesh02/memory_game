@@ -1,6 +1,7 @@
 import { provider, auth, database } from "../lib/firebase";
 import app from "./game";
 import * as game from "./game";
+import getRandomPassSequence from "./PassSequences";
 
 import "../css/global.css";
 
@@ -15,12 +16,10 @@ const userDetails = document.getElementById("userDetails");
 
 document.querySelector("#main").appendChild(app.view);
 
-
 signInBtn.onclick = () => {
     auth.signInWithPopup(provider)
         .then(res => {
-            user = res.user;
-            console.log(user.uid);
+            console.log(res.user.uid);
         })
         .catch(console.log);
 }
@@ -31,7 +30,19 @@ auth.onAuthStateChanged(user => {
     if (user) {
         signedIn.hidden = false;
         signedOut.hidden = true;
+        
         userDetails.innerHTML = `<p style="padding: 0; margin: 0;">Hello ${user.displayName}</p>`
+
+        const ref = database.ref(user.uid);
+        ref.once("value", (data) => {
+            const userExists = data.val();
+            if (!userExists) {
+                ref.child("passSequence").set(getRandomPassSequence());
+            } else {
+                console.log(userExists);
+                game.setPassSequence(userExists.passSequence);
+            }
+        });
 
         finishBtn.onclick = (e) => {
             if (game.isGameOver) {
@@ -39,7 +50,6 @@ auth.onAuthStateChanged(user => {
 
                 e.preventDefault();
 
-                const ref = database.ref(user.uid);
                 const data = {
                     hits: game.hits,
                     misses: game.misses,

@@ -47,39 +47,14 @@ let avgReactionTime = 0;
 
 let indexForNotes = 0;
 let obj = { "S": 0, "D": 1, "F": 2, "J": 4, "K": 5, "L": 6 };  // Note to integer conversion
-let passSequence = [
-  "S",
-  "D",
-  "F",
-  "J",
-  "K",
-  "L",
-  "D",
-  "S",
-  "J",
-  "K",
-  "L",
-  "K",
-  "L",
-  "D",
-  "S",
-  "J",
-  "K",
-  "D",
-  "S",
-  "J",
-  "K",
-  "L",
-  "F",
-  "J",
-  "K",
-  "L",
-  "D",
-  "S",
-  "L",
-  "S"
-]; // Password sequence for the current user.
+let passSequence = []; // Password sequence for the current user.
+let sequence;
 
+const setPassSequence = (seq) => {
+  passSequence = seq;
+  sequence = lib.subBlockGen(passSequence);
+  console.log(sequence);
+}
 
 function setup() {
   isPaused = true;
@@ -265,7 +240,7 @@ function setup() {
   });
 
   // Notes
-  numberOfNotes = 1;
+  numberOfNotes = 0;
   noteSpeed = 5;
   notes = [];
 
@@ -281,12 +256,12 @@ function setup() {
 }
 
 function noteSequence() {
-  let subBlock = lib.subBlockGen(passSequence);
-  console.log(subBlock);
-  if (indexForNotes > passSequence.length - 1) {
+  if (indexForNotes > sequence.length - 1) {
     // isGameOver = true;
   } else {
-    generateNote(obj[subBlock[indexForNotes]]);
+    if (sequence)
+
+    generateNote(obj[sequence[indexForNotes]]);
     indexForNotes++;
   }
 }
@@ -371,7 +346,7 @@ function play(delta) {
 
   if (!isPaused) {
 
-    if (indexForNotes > passSequence.length - 1 && notes.length === 0) {
+    if (indexForNotes > sequence.length - 1 && notes.length === 0) {
       if (timer === 0) {
         isGameOver = true;
       }
@@ -502,5 +477,6 @@ export {
   hitRate,
   isGameOver,
   reactionTimes,
+  setPassSequence,
 };
 export default app;
