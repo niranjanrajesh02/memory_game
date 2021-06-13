@@ -326,22 +326,27 @@ function gameLoop(delta) {
 }
 
 function hitRateMonitor(prevHR, curHR) {
-  // console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
-  noteSpeed = Math.round(noteSpeed - noteSpeed * (0.7 - curHR) * 4);
-  // console.log(noteSpeed);
-  if (noteSpeed < 1) {
+  console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
+  let alpha = 10;
+
+  noteSpeed = Math.floor(noteSpeed - ((0.7 - curHR) * alpha))
+  noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * 25))
+
+  if (noteSpeed < 3) {
     noteSpeed = 3;
-  } else if (noteSpeed > 23) {
-    noteSpeed = 23;
+  }
+  else if (noteSpeed > 15) {
+    noteSpeed = 15;
   }
   //changing noteGenerateLag
-  noteGenerateLag = Math.round(-2.3 * noteSpeed + 58.9);
-  if (noteGenerateLag > 60) {
-    noteGenerateLag = 60;
-  } else if (noteGenerateLag < 10) {
-    noteGenerateLag = 10;
+  if (noteGenerateLag > 55) {
+    noteGenerateLag = 55;
   }
-  // console.log(noteGenerateLag);
+  else if (noteGenerateLag < 20) {
+    noteGenerateLag = 20;
+  }
+  console.log(noteSpeed);
+  console.log(noteGenerateLag);
 }
 
 function collisionCheck(fret, note) {
@@ -366,6 +371,18 @@ function play(delta) {
       if (timer === 0) {
         isGameOver = true;
       }
+    }
+
+    if (
+      noteCounter !== prevNoteCounter &&
+      noteCounter % 20 === 0 &&
+      noteCounter !== 0
+    ) {
+      console.log("counter: ", noteCounter);
+      hitRateMonitor(prevHitRate, hitRate);
+      notes.forEach((note) => {
+        note.vy = noteSpeed;
+      });
     }
 
     gameBg.tint = 0xffffff;
