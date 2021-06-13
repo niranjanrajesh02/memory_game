@@ -449,20 +449,12 @@ function end(delta) {
   notes = [];
 
   if (restart) {
-    hits = 0;
-    misses = 0;
-    hitRate = 0;
     prevHitRate = 0;
     prevNoteCounter = 0;
     noteCounter = 0;
     indexForNotes = 0;
     noteGenerateLag = 50;
     noteSpeed = 5;
-
-    scoreText.text = `score: ${hits}`;
-    hitText.text = `${hitRate.toPrecision(3)}`;
-    missText.text = `misses: ${misses}`;
-    reactionTimes = [];
 
     isGameOver = false;
     restart = false;

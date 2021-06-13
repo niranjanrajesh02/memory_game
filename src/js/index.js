@@ -62,7 +62,7 @@ auth.onAuthStateChanged(user => {
                 alert("game not over yet");
             }
         };
-
+        document.querySelector("#main").appendChild(app.view);
     } else {
         signedIn.hidden = true;
         signedOut.hidden = false;
@@ -71,4 +71,3 @@ auth.onAuthStateChanged(user => {
 });
 
 console.log(game);
-document.querySelector("#main").appendChild(app.view);
