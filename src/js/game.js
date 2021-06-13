@@ -22,7 +22,6 @@ let DIMENSIONS = {
 let app = new Application({
   width: DIMENSIONS.mainWidth,
   height: DIMENSIONS.height,
-  antialias: true,
   resolution: 1,
 });
 
@@ -429,6 +428,7 @@ function play(delta) {
             scoreText.text = `score: ${hits}`;
             hitText.text = `${hitRate.toPrecision(3)}`;
             noteCounter++;
+
             // This subtracts the time when the user presses the corresponding fret to 
             // with the previously taken time
             reactionTimes.push(new Date().valueOf() - note.isInsideFretTime);
@@ -472,7 +472,12 @@ function end(delta) {
     hits = 0;
     misses = 0;
     hitRate = 0;
+    prevHitRate = 0;
+    prevNoteCounter = 0;
+    noteCounter = 0;
     indexForNotes = 0;
+    noteGenerateLag = 50;
+    noteSpeed = 5;
 
     scoreText.text = `score: ${hits}`;
     hitText.text = `${hitRate.toPrecision(3)}`;
@@ -491,6 +496,6 @@ export {
   misses,
   hitRate,
   isGameOver,
-  reactionTimes
+  reactionTimes,
 };
 export default app;
