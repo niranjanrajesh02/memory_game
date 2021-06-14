@@ -44,6 +44,9 @@ let prevNoteCounter = 0;
 let isGameOver;
 let reactionTimes = [];
 let avgReactionTime = 0;
+let numberOfLevels = 5;
+let totalGameNumber = 7;
+let gameNumber;
 
 let indexForNotes = 0;
 let obj = { "S": 0, "D": 1, "F": 2, "J": 4, "K": 5, "L": 6 };  // Note to integer conversion
@@ -52,14 +55,19 @@ let sequence;
 
 const setPassSequence = (seq) => {
   passSequence = seq;
-  sequence = lib.subBlockGen(passSequence);
+  sequence = lib.subBlockGen(passSequence)
+  for (let i = 0; i < numberOfLevels - 1; i++) {
+    sequence = [...sequence, ...lib.subBlockGen(passSequence)];
+  }
   console.log(sequence);
+  // sequence = passSequence
 }
 
 function setup() {
   isPaused = true;
   restart = false;
   isGameOver = false;
+  gameNumber = 1;
 
   gameScene = new Container();
   scoreScene = new Container();
@@ -121,10 +129,10 @@ function setup() {
 
   // Game Over Text
   gameOverText = lib.createText(
-    `GAME OVER`,
+    `GAME ${gameNumber} FINISHED, Take 20 seconds`,
     {
       fill: "black",
-      fontFamily: "pixel, sans-serif",
+      // fontFamily: "pixel, sans-serif",
     },
     gameOverScene
   );
@@ -257,7 +265,7 @@ function setup() {
 
 function noteSequence() {
   if (indexForNotes > sequence.length - 1) {
-    // isGameOver = true;
+    // sequence = lib.subBlockGen(passSequence);
   } else {
     if (sequence)
 
@@ -433,6 +441,8 @@ function play(delta) {
   }
 
   if (isGameOver) {
+    gameNumber += 1;
+    console.log(gameNumber);
     state = end;
   }
 }
@@ -440,7 +450,10 @@ function play(delta) {
 function end(delta) {
   gameScene.visible = false;
   gameOverScene.visible = true;
-
+  gameOverText.text =
+    gameNumber <= totalGameNumber
+      ? `GAME ${gameNumber - 1} FINISHED, Take 20 seconds`
+      : `GAMES FINISHED, Press "Finish Session"`;
 
   notes.forEach((note) => {
     note.clear();
@@ -449,17 +462,23 @@ function end(delta) {
   notes = [];
 
   if (restart) {
-    prevHitRate = 0;
-    prevNoteCounter = 0;
-    noteCounter = 0;
-    indexForNotes = 0;
-    noteGenerateLag = 50;
-    noteSpeed = 5;
+    if (gameNumber > totalGameNumber) {
+      gameOverText.text = `You want to play more?`
+    } else {
+      prevHitRate = 0;
+      prevNoteCounter = 0;
+      noteCounter = 0;
+      indexForNotes = 0;
+      noteGenerateLag = 50;
+      noteSpeed = 5;
+      sequence = [];
+      setPassSequence(passSequence);
 
-    isGameOver = false;
-    restart = false;
-    isPaused = true;
-    state = play;
+      isGameOver = false;
+      restart = false;
+      isPaused = true;
+      state = play;
+    }
   }
 }
 
@@ -470,5 +489,7 @@ export {
   isGameOver,
   reactionTimes,
   setPassSequence,
+  gameNumber,
+  totalGameNumber,
 };
 export default app;

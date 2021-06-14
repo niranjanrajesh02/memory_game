@@ -40,10 +40,11 @@ auth.onAuthStateChanged(user => {
                 console.log(userExists);
                 game.setPassSequence(userExists.passSequence);
             }
+            document.querySelector("#main").appendChild(app.view);
         });
 
         finishBtn.onclick = (e) => {
-            if (game.isGameOver) {
+            if (game.isGameOver && game.gameNumber === game.totalGameNumber + 1) {
                 console.log("game over");
 
                 e.preventDefault();
@@ -57,16 +58,16 @@ auth.onAuthStateChanged(user => {
                 console.log(user.uid, data);
 
                 ref.push(data);
-
+                alert(`pushed your data to firebase:- HITS:${data.hits}, MISSES:${data.misses}, HITRATE:${data.hitRate}`);
             } else {
-                alert("game not over yet");
+                alert(`Game not over yet, Game number ${game.gameNumber}`);
             }
         };
-        document.querySelector("#main").appendChild(app.view);
     } else {
         signedIn.hidden = true;
         signedOut.hidden = false;
-        userDetails.innerHTML = ``;
+        userDetails.innerHTML = `<p style="padding: 0; margin: 0;">Login to Play</p>`;
+        document.querySelector("#main").removeChild(app.view);
     }
 });
 
