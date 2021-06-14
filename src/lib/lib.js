@@ -239,6 +239,7 @@ function subBlockGen(passSeq) {
 }
 
 
+
 export {
   createCircle,
   rectCollisionCheck,
@@ -249,5 +250,6 @@ export {
   getDistance,
   circleCollisionBounce,
   createText,
-  subBlockGen
+  subBlockGen,
+
 };

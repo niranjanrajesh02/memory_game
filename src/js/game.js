@@ -92,14 +92,14 @@ function setup() {
   scoreScene.position.set(DIMENSIONS.gameWidth, 0);
 
   // Score Text
-  scoreText = lib.createText(`score: ${hits}`, { fill: "black" }, scoreScene);
+  scoreText = lib.createText(`Score: ${hits}`, { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
-  missText = lib.createText(`misses: ${misses}`, { fill: "black" }, scoreScene);
+  missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
   missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
 
   hitText = lib.createText(
-    `${hitRate.toPrecision(3)}`,
+    `Hit Rate: ${hitRate.toPrecision(3)}`,
     { fill: "black" },
     scoreScene
   );
@@ -129,7 +129,7 @@ function setup() {
 
   // Game Over Text
   gameOverText = lib.createText(
-    `GAME ${gameNumber} FINISHED, Take 20 seconds`,
+    `Level ${gameNumber}/7 Complete, Take a short break.`,
     {
       fill: "black",
       // fontFamily: "pixel, sans-serif",
@@ -269,7 +269,7 @@ function noteSequence() {
   } else {
     if (sequence)
 
-    generateNote(obj[sequence[indexForNotes]]);
+      generateNote(obj[sequence[indexForNotes]]);
     indexForNotes++;
   }
 }
@@ -313,11 +313,12 @@ function gameLoop(delta) {
 }
 
 function hitRateMonitor(prevHR, curHR) {
-  console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
+  // console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
   let alpha = 10;
+  let beta = 25;
 
   noteSpeed = Math.floor(noteSpeed - ((0.7 - curHR) * alpha))
-  noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * 25))
+  noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * beta))
 
   if (noteSpeed < 3) {
     noteSpeed = 3;
@@ -332,8 +333,8 @@ function hitRateMonitor(prevHR, curHR) {
   else if (noteGenerateLag < 20) {
     noteGenerateLag = 20;
   }
-  console.log(noteSpeed);
-  console.log(noteGenerateLag);
+  // console.log(noteSpeed);
+  // console.log(noteGenerateLag);
 }
 
 function collisionCheck(fret, note) {
@@ -365,7 +366,6 @@ function play(delta) {
       noteCounter % 20 === 0 &&
       noteCounter !== 0
     ) {
-      console.log("counter: ", noteCounter);
       hitRateMonitor(prevHitRate, hitRate);
       notes.forEach((note) => {
         note.vy = noteSpeed;
@@ -482,6 +482,7 @@ function end(delta) {
   }
 }
 
+
 export {
   hits,
   misses,
@@ -490,6 +491,6 @@ export {
   reactionTimes,
   setPassSequence,
   gameNumber,
-  totalGameNumber,
+  totalGameNumber
 };
 export default app;
