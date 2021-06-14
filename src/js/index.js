@@ -13,6 +13,7 @@ const signOutBtn = document.getElementById("signOutBtn");
 const finishBtn = document.getElementById("finishBtn");
 
 const userDetails = document.getElementById("userDetails");
+const loginToPlay = document.getElementById("loginToPlay");
 
 signInBtn.onclick = () => {
     auth.signInWithPopup(provider)
@@ -35,7 +36,10 @@ auth.onAuthStateChanged(user => {
         ref.once("value", (data) => {
             const userExists = data.val();
             if (!userExists) {
-                ref.child("passSequence").set(getRandomPassSequence());
+                let seq = getRandomPassSequence()
+                ref.child("passSequence").set(seq, () => {
+                    game.setPassSequence(seq);
+                });
             } else {
                 console.log(userExists);
                 game.setPassSequence(userExists.passSequence);
@@ -66,7 +70,7 @@ auth.onAuthStateChanged(user => {
     } else {
         signedIn.hidden = true;
         signedOut.hidden = false;
-        userDetails.innerHTML = `<p style="padding: 0; margin: 0;">Login to Play</p>`;
+        loginToPlay.innerHTML = `<p style="padding: 0; margin: 0;">Login to Play</p>`;
         document.querySelector("#main").removeChild(app.view);
     }
 });
