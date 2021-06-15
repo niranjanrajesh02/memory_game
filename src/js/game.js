@@ -95,15 +95,15 @@ function setup() {
   scoreText = lib.createText(`Score: ${hits}`, { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
-  missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
-  missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
+  // missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
+  // missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
 
-  hitText = lib.createText(
-    `Hit Rate: ${hitRate.toPrecision(3)}`,
-    { fill: "black" },
-    scoreScene
-  );
-  hitText.position.set(scoreBg.width / 2 - hitText.width / 2, 150);
+  // hitText = lib.createText(
+  //   `${hitRate.toPrecision(3)}`,
+  //   { fill: "black" },
+  //   scoreScene
+  // );
+  // hitText.position.set(scoreBg.width / 2 - hitText.width / 2, 150);
 
   // Game Over
   gameOverBg = new Sprite(Texture.WHITE);
@@ -147,9 +147,7 @@ function setup() {
   gameBg.height = DIMENSIONS.height;
   gameBg.position.set(0, 0);
   gameBg.tint = 0xffffff;
-
   gameScene.addChild(gameBg);
-
   // The distance between each pole is 70, there are 8 such poles, hence 7 spaces,
   // therefore total width between the first and last pole will be 7 * 70 = 490.
   // Total width of the gameScene is 600, hence there is a whitespace of 110 on both sides.
@@ -178,7 +176,6 @@ function setup() {
 
   // Frets
   frets = [];
-
   for (let i = 0; i < 7; i++) {
     let offsetX = 60;
     let gap = 70;
@@ -194,12 +191,10 @@ function setup() {
 
     fret.position.set(offsetX + i * gap, DIMENSIONS.height - 80);
     frets.push({ fret: fret, isPressed: false });
-
     gameScene.addChild(fret);
   }
 
   let letters = "SDFJKL";
-
   for (let i = 0; i < 6; i++) {
     let letter = lib.createText(
       `${letters[i]}`,
@@ -214,7 +209,6 @@ function setup() {
       DIMENSIONS.height - 60
     );
   }
-
   // Keyboard Input
   keyInputs = [];
 
@@ -251,11 +245,6 @@ function setup() {
   numberOfNotes = 0;
   noteSpeed = 5;
   notes = [];
-
-  // for (let i = 0; i < numberOfNotes; i++) {
-  //   generateNote(-1);
-  // }
-
   noteGenerateLag = 50;
   timer = 1;
 
@@ -414,7 +403,7 @@ function play(delta) {
 
             hitRate = hits / (hits + misses);
             scoreText.text = `score: ${hits}`;
-            hitText.text = `${hitRate.toPrecision(3)}`;
+            // hitText.text = `${hitRate.toPrecision(3)}`;
             noteCounter++;
 
             // This subtracts the time when the user presses the corresponding fret to 
@@ -430,8 +419,8 @@ function play(delta) {
         object.splice(index, 1);
         misses += 1;
         hitRate = hits / (hits + misses);
-        missText.text = `misses: ${misses}`;
-        hitText.text = `${hitRate.toPrecision(3)}`;
+        // missText.text = `misses: ${misses}`;
+        // hitText.text = `${hitRate.toPrecision(3)}`;
         noteCounter++;
       }
     });

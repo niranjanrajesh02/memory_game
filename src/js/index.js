@@ -15,13 +15,7 @@ const finishBtn = document.getElementById("finishBtn");
 const userDetails = document.getElementById("userDetails");
 const loginToPlay = document.getElementById("loginToPlay");
 
-function avgArray(arr) {
-    let sum = 0;
-    for (let i = 0; i < arr.length; i++) {
-        sum += arr[i]
-    }
-    return ((sum / arr.length))
-}
+
 
 signInBtn.onclick = () => {
     auth.signInWithPopup(provider)
@@ -59,14 +53,14 @@ auth.onAuthStateChanged(user => {
         finishBtn.onclick = (e) => {
             console.log();
             if (game.isGameOver && game.gameNumber === game.totalGameNumber + 1) {
-                const avgReaction = avgArray(game.reactionTimes);
+                // const avgReaction = avgArray(game.reactionTimes);
                 console.log("game over");
                 e.preventDefault();
                 const data = {
                     hits: game.hits,
                     misses: game.misses,
                     hitRate: game.hitRate.toFixed(3),
-                    avgReactionTime: avgReaction.toFixed(3),
+                    // avgReactionTime: avgReaction.toFixed(3),
                 };
                 console.log(user.uid, data);
 
