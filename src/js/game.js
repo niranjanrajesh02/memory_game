@@ -31,11 +31,12 @@ loader.load(setup);
 
 let state, gameScene, gameBg, isPaused;
 let gameOverBg, gameOverText, gameOverScene, restartButton, restart;
-let scoreScene, scoreText, missText, hitText, scoreBg;
+let scoreScene, scoreText, missText, hitText, streakText, scoreBg;
 let numberOfNotes, noteSpeed, noteGenerateLag, timer;
 let frets, keyInputs, notes;
 
 let hits = 0;
+let streak = 0;
 let misses = 0;
 let hitRate = 0;
 let prevHitRate = 0;
@@ -92,12 +93,14 @@ function setup() {
   scoreScene.position.set(DIMENSIONS.gameWidth, 0);
 
   // Score Text
-  scoreText = lib.createText(`Score: ${hits}`, { fill: "black" }, scoreScene);
+  scoreText = lib.createText(`Score: 0`, { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
-  // missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
-  // missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
+  missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
+  missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
 
+  streakText = lib.createText(`Streak: 0`, { fill: "black" }, scoreScene);
+  streakText.position.set(scoreBg.width / 2 - streakText.width / 2, 150);
   // hitText = lib.createText(
   //   `${hitRate.toPrecision(3)}`,
   //   { fill: "black" },
@@ -113,17 +116,23 @@ function setup() {
   gameOverBg.tint = 0xffffff;
 
   restartButton = new Sprite(Texture.WHITE);
-  restartButton.width = 25;
-  restartButton.height = 25;
-  restartButton.position.set(0, 0);
-  restartButton.tint = 0x000000;
-  restartButton.interactive = true;
+  const restartText = new PIXI.Text("Continue", { fill: "#000000" })
   restartButton.on("mouseup", () => {
     restart = true;
   });
+  restartButton.width = 150;
+  restartButton.height = restartText.height;
+  let restartX = DIMENSIONS.gameWidth / 2 - (0.5 * restartButton.width);
+  let restartY = DIMENSIONS.height / 2 + 50;
+  let restartTextX = DIMENSIONS.gameWidth / 2 - (0.5 * restartText.width);
+  restartButton.position.set(restartX, restartY);
+  restartText.position.set(restartTextX, restartY);
+  restartButton.tint = 0x666666;
+  restartButton.interactive = true;
+
 
   gameOverScene.addChild(gameOverBg);
-  gameOverScene.addChild(restartButton);
+  gameOverScene.addChild(restartButton, restartText);
 
   gameOverScene.visible = false;
 
@@ -233,12 +242,21 @@ function setup() {
   };
 
   keyInputs.forEach((key, i) => {
-    key.press = () => {
-      frets[i].isPressed = true;
-    };
-    key.release = () => {
-      frets[i].isPressed = false;
-    };
+    let othersPressed = false;
+    for (let j = 1; j < keyInputs.length; j++) {
+      // console.log(keyInputs[(i + j) % keyInputs.length]);
+      if (keyInputs[(i + j) % keyInputs.length].isDown) {
+        othersPressed = true;
+      }
+    }
+    if (!othersPressed) {
+      key.press = () => {
+        frets[i].isPressed = true;
+      }
+      key.release = () => {
+        frets[i].isPressed = false;
+      };
+    }
   });
 
   // Notes
@@ -400,9 +418,10 @@ function play(delta) {
             note.clear();
             object.splice(index, 1);
             hits += 1;
-
+            streak += 1;
             hitRate = hits / (hits + misses);
-            scoreText.text = `score: ${hits}`;
+            scoreText.text = `Score: ${hits}`;
+            streakText.text = `Streak: ${streak}`;
             // hitText.text = `${hitRate.toPrecision(3)}`;
             noteCounter++;
 
@@ -418,8 +437,10 @@ function play(delta) {
         note.clear();
         object.splice(index, 1);
         misses += 1;
+        streak = 0;
         hitRate = hits / (hits + misses);
-        // missText.text = `misses: ${misses}`;
+        missText.text = `Misses: ${misses}`;
+        streakText.text = `Streak: ${streak}`;
         // hitText.text = `${hitRate.toPrecision(3)}`;
         noteCounter++;
       }
