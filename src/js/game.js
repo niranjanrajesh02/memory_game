@@ -355,8 +355,8 @@ function hitRateMonitor(curHR) {
   if (noteSpeed < 3) {
     noteSpeed = 3;
   }
-  else if (noteSpeed > 15) {
-    noteSpeed = 15;
+  else if (noteSpeed > 12) {
+    noteSpeed = 12;
   }
   //changing noteGenerateLag
   if (noteGenerateLag > 55) {
