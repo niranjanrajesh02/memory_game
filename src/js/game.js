@@ -353,7 +353,7 @@ function hitRateMonitor(curHR) {
   let beta = 25;
 
   noteSpeed = Math.floor(noteSpeed - ((0.7 - curHR) * alpha))
-  // noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * beta))
+  noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * beta))
 
   if (noteSpeed < 3) {
     noteSpeed = 3;
@@ -362,12 +362,12 @@ function hitRateMonitor(curHR) {
     noteSpeed = 12;
   }
   //changing noteGenerateLag
-  // if (noteGenerateLag > 55) {
-  //   noteGenerateLag = 55;
-  // }
-  // else if (noteGenerateLag < 20) {
-  //   noteGenerateLag = 20;
-  // }
+  if (noteGenerateLag > 55) {
+    noteGenerateLag = 55;
+  }
+  else if (noteGenerateLag < 20) {
+    noteGenerateLag = 20;
+  }
   // console.log(noteSpeed);
   // console.log(noteGenerateLag);
 }
@@ -499,7 +499,7 @@ function end(delta) {
 
   if (restart) {
     if (gameNumber > totalGameNumber) {
-      gameOverText.text = `You want to play more?`
+      gameOverText.text = `You are all done, come back next week!`
     } else {
       prevHitRate = 0;
       prevNoteCounter = 0;
