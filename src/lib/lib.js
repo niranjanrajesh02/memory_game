@@ -63,6 +63,8 @@ function keyboard(keyCode) {
   key.isUp = true;
   key.press = undefined;
   key.release = undefined;
+  key.othersPressed = false;
+
 
   key.downHandler = (e) => {
     if (e.keyCode === key.code) {

@@ -96,11 +96,11 @@ function setup() {
   scoreText = lib.createText(`Score: 0`, { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
-  missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
-  missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
+  // missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
+  // missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
 
   streakText = lib.createText(`Streak: 0`, { fill: "black" }, scoreScene);
-  streakText.position.set(scoreBg.width / 2 - streakText.width / 2, 150);
+  streakText.position.set(scoreBg.width / 2 - streakText.width / 2, 100);
   // hitText = lib.createText(
   //   `${hitRate.toPrecision(3)}`,
   //   { fill: "black" },
@@ -218,17 +218,6 @@ function setup() {
       DIMENSIONS.height - 60
     );
   }
-  // Keyboard Input
-  keyInputs = [];
-
-  keyInputs.push(
-    lib.keyboard(83),
-    lib.keyboard(68),
-    lib.keyboard(70),
-    lib.keyboard(74),
-    lib.keyboard(75),
-    lib.keyboard(76)
-  );
 
   let space = lib.keyboard(32);
   let esc = lib.keyboard(27);
@@ -240,24 +229,27 @@ function setup() {
   esc.press = () => {
     isGameOver = true;
   };
+  window.addEventListener('keydown', onKeyDown)
+  window.addEventListener('keyup', onKeyUp)
 
-  keyInputs.forEach((key, i) => {
+  let pressKeys = [83, 68, 70, 74, 75, 76]
+
+  function onKeyDown(key) {
+    let index = pressKeys.indexOf(key.keyCode)
     let othersPressed = false;
-    for (let j = 1; j < keyInputs.length; j++) {
-      // console.log(keyInputs[(i + j) % keyInputs.length]);
-      if (keyInputs[(i + j) % keyInputs.length].isDown) {
+    for (let j = 1; j < pressKeys.length; j++) {
+      if (frets[(index + j) % pressKeys.length].isPressed) {
         othersPressed = true;
       }
     }
     if (!othersPressed) {
-      key.press = () => {
-        frets[i].isPressed = true;
-      }
-      key.release = () => {
-        frets[i].isPressed = false;
-      };
+      frets[index].isPressed = true;
     }
-  });
+  }
+  function onKeyUp(key) {
+    let index = pressKeys.indexOf(key.keyCode)
+    frets[index].isPressed = false;
+  }
 
   // Notes
   numberOfNotes = 0;
@@ -319,7 +311,7 @@ function gameLoop(delta) {
   state(delta);
 }
 
-function hitRateMonitor(prevHR, curHR) {
+function hitRateMonitor(curHR) {
   // console.log("hitRate:", curHR.toPrecision(3), prevHR.toPrecision(3), "speed:", noteSpeed.toPrecision(3));
   let alpha = 10;
   let beta = 25;
@@ -373,7 +365,7 @@ function play(delta) {
       noteCounter % 20 === 0 &&
       noteCounter !== 0
     ) {
-      hitRateMonitor(prevHitRate, hitRate);
+      hitRateMonitor(hitRate);
       notes.forEach((note) => {
         note.vy = noteSpeed;
       });
@@ -399,7 +391,6 @@ function play(delta) {
       }
     });
 
-    prevHitRate = hitRate;
     prevNoteCounter = noteCounter;
 
     // For each note check if it is colliding with any fret.
@@ -439,7 +430,6 @@ function play(delta) {
         misses += 1;
         streak = 0;
         hitRate = hits / (hits + misses);
-        missText.text = `Misses: ${misses}`;
         streakText.text = `Streak: ${streak}`;
         // hitText.text = `${hitRate.toPrecision(3)}`;
         noteCounter++;
@@ -462,8 +452,8 @@ function end(delta) {
   gameOverScene.visible = true;
   gameOverText.text =
     gameNumber <= totalGameNumber
-      ? `GAME ${gameNumber - 1} FINISHED, Take 20 seconds`
-      : `GAMES FINISHED, Press "Finish Session"`;
+      ? `GAME ${gameNumber - 1}/7 Finished. Take a short break!`
+      : `All Games Finished! Press "Finish Session". `;
 
   notes.forEach((note) => {
     note.clear();
@@ -483,7 +473,6 @@ function end(delta) {
       noteSpeed = 5;
       sequence = [];
       setPassSequence(passSequence);
-
       isGameOver = false;
       restart = false;
       isPaused = true;
