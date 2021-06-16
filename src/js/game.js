@@ -3,12 +3,15 @@ import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
 
 import * as lib from "../lib/lib";
 
+
 let loader = PIXI.Loader.shared;
 
 let type = "WebGL";
 if (!PIXI.utils.isWebGLSupported()) {
   type = "canvas";
 }
+
+
 
 PIXI.utils.sayHello(type);
 
@@ -24,7 +27,7 @@ let app = new Application({
   height: DIMENSIONS.height,
   resolution: 1,
 });
-
+app.ticker.maxFPS = 60;
 // document.querySelector("#main").appendChild(app.view);
 
 loader.load(setup);
@@ -238,9 +241,9 @@ function setup() {
     isPaused = !isPaused;
   };
 
-  esc.press = () => {
-    isGameOver = true;
-  };
+  // esc.press = () => {
+  //   isGameOver = true;
+  // };
 
   keyInputs.forEach((key, i, arr) => {
     key.press = () => {
