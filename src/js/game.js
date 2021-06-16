@@ -3,12 +3,15 @@ import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
 
 import * as lib from "../lib/lib";
 
+
 let loader = PIXI.Loader.shared;
 
 let type = "WebGL";
 if (!PIXI.utils.isWebGLSupported()) {
   type = "canvas";
 }
+
+
 
 PIXI.utils.sayHello(type);
 
@@ -24,7 +27,7 @@ let app = new Application({
   height: DIMENSIONS.height,
   resolution: 1,
 });
-
+app.ticker.maxFPS = 60;
 // document.querySelector("#main").appendChild(app.view);
 
 loader.load(setup);
@@ -238,9 +241,9 @@ function setup() {
     isPaused = !isPaused;
   };
 
-  esc.press = () => {
-    isGameOver = true;
-  };
+  // esc.press = () => {
+  //   isGameOver = true;
+  // };
 
   keyInputs.forEach((key, i, arr) => {
     key.press = () => {
@@ -350,7 +353,7 @@ function hitRateMonitor(curHR) {
   let beta = 25;
 
   noteSpeed = Math.floor(noteSpeed - ((0.7 - curHR) * alpha))
-  noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * beta))
+  // noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * beta))
 
   if (noteSpeed < 3) {
     noteSpeed = 3;
@@ -359,12 +362,12 @@ function hitRateMonitor(curHR) {
     noteSpeed = 12;
   }
   //changing noteGenerateLag
-  if (noteGenerateLag > 55) {
-    noteGenerateLag = 55;
-  }
-  else if (noteGenerateLag < 20) {
-    noteGenerateLag = 20;
-  }
+  // if (noteGenerateLag > 55) {
+  //   noteGenerateLag = 55;
+  // }
+  // else if (noteGenerateLag < 20) {
+  //   noteGenerateLag = 20;
+  // }
   // console.log(noteSpeed);
   // console.log(noteGenerateLag);
 }
