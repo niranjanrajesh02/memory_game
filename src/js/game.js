@@ -359,12 +359,12 @@ function hitRateMonitor(curHR) {
     noteSpeed = 12;
   }
   //changing noteGenerateLag
-  if (noteGenerateLag > 55) {
-    noteGenerateLag = 55;
-  }
-  else if (noteGenerateLag < 20) {
-    noteGenerateLag = 20;
-  }
+  // if (noteGenerateLag > 55) {
+  //   noteGenerateLag = 55;
+  // }
+  // else if (noteGenerateLag < 20) {
+  //   noteGenerateLag = 20;
+  // }
   // console.log(noteSpeed);
   // console.log(noteGenerateLag);
 }
