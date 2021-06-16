@@ -350,7 +350,7 @@ function hitRateMonitor(curHR) {
   let beta = 25;
 
   noteSpeed = Math.floor(noteSpeed - ((0.7 - curHR) * alpha))
-  noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * beta))
+  // noteGenerateLag = Math.floor(noteGenerateLag + ((0.7 - curHR) * beta))
 
   if (noteSpeed < 3) {
     noteSpeed = 3;
@@ -472,7 +472,6 @@ function play(delta) {
   } else {
     gameBg.tint = 0x333333;
   }
-
   if (isGameOver) {
     gameNumber += 1;
     console.log(gameNumber);
