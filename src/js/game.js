@@ -219,6 +219,18 @@ function setup() {
     );
   }
 
+  // Keyboard Input
+  keyInputs = [];
+
+  keyInputs.push(
+    lib.keyboard(83),
+    lib.keyboard(68),
+    lib.keyboard(70),
+    lib.keyboard(74),
+    lib.keyboard(75),
+    lib.keyboard(76)
+  );
+
   let space = lib.keyboard(32);
   let esc = lib.keyboard(27);
 
@@ -229,27 +241,48 @@ function setup() {
   esc.press = () => {
     isGameOver = true;
   };
-  window.addEventListener('keydown', onKeyDown)
-  window.addEventListener('keyup', onKeyUp)
 
-  let pressKeys = [83, 68, 70, 74, 75, 76]
+  keyInputs.forEach((key, i, arr) => {
+    key.press = () => {
+      let isOtherDown = false;
 
-  function onKeyDown(key) {
-    let index = pressKeys.indexOf(key.keyCode)
-    let othersPressed = false;
-    for (let j = 1; j < pressKeys.length; j++) {
-      if (frets[(index + j) % pressKeys.length].isPressed) {
-        othersPressed = true;
+      arr.filter((oKey) => oKey !== key).forEach((otherKey) => {
+        if (otherKey.isDown) {
+          isOtherDown = true;
+        }
+      })
+
+      if (!isOtherDown) {
+        frets[i].isPressed = true;
       }
-    }
-    if (!othersPressed) {
-      frets[index].isPressed = true;
-    }
-  }
-  function onKeyUp(key) {
-    let index = pressKeys.indexOf(key.keyCode)
-    frets[index].isPressed = false;
-  }
+
+    };
+    key.release = () => {
+      frets[i].isPressed = false;
+    };
+  });
+
+  // window.addEventListener('keydown', onKeyDown)
+  // window.addEventListener('keyup', onKeyUp)
+
+  // let pressKeys = [83, 68, 70, 74, 75, 76]
+
+  // function onKeyDown(key) {
+  //   let index = pressKeys.indexOf(key.keyCode)
+  //   let othersPressed = false;
+  //   for (let j = 1; j < pressKeys.length; j++) {
+  //     if (frets[(index + j) % pressKeys.length].isPressed) {
+  //       othersPressed = true;
+  //     }
+  //   }
+  //   if (!othersPressed) {
+  //     frets[index].isPressed = true;
+  //   }
+  // }
+  // function onKeyUp(key) {
+  //   let index = pressKeys.indexOf(key.keyCode)
+  //   frets[index].isPressed = false;
+  // }
 
   // Notes
   numberOfNotes = 0;
