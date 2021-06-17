@@ -59,10 +59,11 @@ let sequence;
 
 const setPassSequence = (seq) => {
   passSequence = seq;
-  sequence = lib.subBlockGen(passSequence)
-  for (let i = 0; i < numberOfLevels - 1; i++) {
-    sequence = [...sequence, ...lib.subBlockGen(passSequence)];
-  }
+  // sequence = lib.subBlockGen(passSequence)
+  // for (let i = 0; i < numberOfLevels - 1; i++) {
+  //   sequence = [...sequence, ...lib.subBlockGen(passSequence)];
+  // }
+  sequence = lib.authSeqGen(passSequence)
   console.log(sequence);
   // sequence = passSequence
 }
@@ -301,9 +302,9 @@ function setup() {
 function noteSequence() {
   if (indexForNotes > sequence.length - 1) {
     // sequence = lib.subBlockGen(passSequence);
-  } else {
+  }
+  else {
     if (sequence)
-
       generateNote(obj[sequence[indexForNotes]]);
     indexForNotes++;
   }
@@ -313,7 +314,6 @@ function noteSequence() {
 function generateNote(n) {
   let noteOffsetX = 90,
     noteGapX = 70;
-
   let x;
 
   while (true) {

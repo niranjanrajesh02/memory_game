@@ -240,6 +240,44 @@ function subBlockGen(passSeq) {
   return (masterSeq)
 }
 
+function authSeqGen(passSeq) {
+  const authSeqData = require("./AuthSequencesk1k2.json")
+  let k0 = passSeq;
+  let k1 = authSeqData.k1;
+  let k2 = authSeqData.k2;
+  let seq = [];
+  let availableIndexes = []
+
+  //initialising seq
+  for (let i = 0; i < 18; i++) {
+    seq.push("_")
+    availableIndexes.push(i)
+  }
+
+  //adding k0 to 6 random indexes
+  for (let i = 0; i < 6; i++) {
+    let randomElement = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+    seq[randomElement] = k0;
+    availableIndexes.splice(availableIndexes.indexOf(randomElement), 1)
+  }
+
+  //adding k1 to 6 random indexes
+  for (let i = 0; i < 6; i++) {
+    let randomElement = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+    seq[randomElement] = k1;
+    availableIndexes.splice(availableIndexes.indexOf(randomElement), 1)
+  }
+
+  //adding k2 to 6 random indexes
+  for (let i = 0; i < 6; i++) {
+    let randomElement = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+    seq[randomElement] = k2;
+    availableIndexes.splice(availableIndexes.indexOf(randomElement), 1)
+  }
+
+  const flattenedSeq = seq.flat();
+  return (flattenedSeq)
+}
 
 
 export {
@@ -253,5 +291,5 @@ export {
   circleCollisionBounce,
   createText,
   subBlockGen,
-
+  authSeqGen,
 };
