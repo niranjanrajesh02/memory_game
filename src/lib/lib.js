@@ -247,6 +247,7 @@ function authSeqGen(passSeq) {
   let k2 = authSeqData.k2;
   let seq = [];
   let availableIndexes = []
+  let indexofPass = []
 
   //initialising seq
   for (let i = 0; i < 18; i++) {
@@ -259,6 +260,7 @@ function authSeqGen(passSeq) {
     let randomElement = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
     seq[randomElement] = k0;
     availableIndexes.splice(availableIndexes.indexOf(randomElement), 1)
+    indexofPass.push(randomElement)
   }
 
   //adding k1 to 6 random indexes
@@ -274,9 +276,16 @@ function authSeqGen(passSeq) {
     seq[randomElement] = k2;
     availableIndexes.splice(availableIndexes.indexOf(randomElement), 1)
   }
-
+  //stores the position of the first item of the passsequence in both arrays
   const flattenedSeq = seq.flat();
-  return (flattenedSeq)
+  let indexinFlattened = indexofPass.map((item) => (
+    item = item * 30
+  ))
+  // console.log(indexofPass);
+  // console.log(indexinFlattened.sort(function (a, b) { return a - b }));
+  // console.log(flattenedSeq);
+
+  return { sequence: flattenedSeq, indexesOfPass: indexinFlattened.sort(function (a, b) { return a - b }) }
 }
 
 

@@ -44,18 +44,25 @@ let misses = 0;
 let hitRate = 0;
 let prevHitRate = 0;
 let noteCounter = 0;
-let prevNoteCounter = 0;
+let prevNoteCounter = -1;
 let isGameOver;
 let reactionTimes = [];
 let avgReactionTime = 0;
 let numberOfLevels = 5;
-let totalGameNumber = 7;
+let totalGameNumber = 1;
 let gameNumber;
 
 let indexForNotes = 0;
 let obj = { "S": 0, "D": 1, "F": 2, "J": 4, "K": 5, "L": 6 };  // Note to integer conversion
 let passSequence = []; // Password sequence for the current user.
 let sequence;
+let authGen;
+let passIndexes;
+let onPassSeq;
+let passFirstNote;
+let passHits = 0;
+let passMisses = 0;
+let passHitRate = 0;
 
 const setPassSequence = (seq) => {
   passSequence = seq;
@@ -63,8 +70,11 @@ const setPassSequence = (seq) => {
   // for (let i = 0; i < numberOfLevels - 1; i++) {
   //   sequence = [...sequence, ...lib.subBlockGen(passSequence)];
   // }
-  sequence = lib.authSeqGen(passSequence)
+  authGen = lib.authSeqGen(passSequence)
+  sequence = authGen.sequence;
+  passIndexes = authGen.indexesOfPass;
   console.log(sequence);
+  console.log(passIndexes);
   // sequence = passSequence
 }
 
@@ -100,8 +110,8 @@ function setup() {
   scoreText = lib.createText(`Score: 0`, { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
-  // missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
-  // missText.position.set(scoreBg.width / 2 - missText.width / 2, 100);
+  missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
+  missText.position.set(scoreBg.width / 2 - missText.width / 2, 150);
 
   streakText = lib.createText(`Streak: 0`, { fill: "black" }, scoreScene);
   streakText.position.set(scoreBg.width / 2 - streakText.width / 2, 100);
@@ -242,9 +252,9 @@ function setup() {
     isPaused = !isPaused;
   };
 
-  // esc.press = () => {
-  //   isGameOver = true;
-  // };
+  esc.press = () => {
+    isGameOver = true;
+  };
 
   keyInputs.forEach((key, i, arr) => {
     key.press = () => {
@@ -384,12 +394,34 @@ function collisionCheck(fret, note) {
   );
 }
 
+function onPassOn() {
+  onPassSeq = true;
+  if (passIndexes.length > 0) {
+    passIndexes.shift();
+  }
+  passFirstNote = noteCounter;
+}
+
+function onPassHandler() {
+  if (noteCounter < passFirstNote + 30) {
+    console.log(noteCounter, passFirstNote, "ON PASS");
+  }
+  else {
+    onPassSeq = false;
+  }
+}
+
 function play(delta) {
   gameScene.visible = true;
   gameOverScene.visible = false;
 
   if (!isPaused) {
-
+    if (noteCounter == passIndexes[0] && noteCounter !== prevNoteCounter) {
+      onPassOn();
+    }
+    if (onPassSeq && noteCounter !== prevNoteCounter) {
+      onPassHandler();
+    }
     if (indexForNotes > sequence.length - 1 && notes.length === 0) {
       if (timer === 0) {
         isGameOver = true;
@@ -451,6 +483,11 @@ function play(delta) {
             streakText.text = `Streak: ${streak}`;
             // hitText.text = `${hitRate.toPrecision(3)}`;
             noteCounter++;
+            if (onPassSeq) {
+              passHits += 1;
+              passHitRate = passHits / (passHits + passMisses);
+              console.log(passHits, passMisses, passHitRate.toPrecision(3));
+            }
 
             // This subtracts the time when the user presses the corresponding fret to 
             // with the previously taken time
@@ -467,8 +504,14 @@ function play(delta) {
         streak = 0;
         hitRate = hits / (hits + misses);
         streakText.text = `Streak: ${streak}`;
+        missText.text = `Misses: ${misses}`;
         // hitText.text = `${hitRate.toPrecision(3)}`;
         noteCounter++;
+        if (onPassSeq) {
+          passMisses += 1;
+          passHitRate = passHits / (passHits + passMisses);
+          console.log(passHits, passMisses, passHitRate.toPrecision(3));
+        }
       }
     });
 
@@ -489,7 +532,7 @@ function end(delta) {
   gameOverText.text =
     gameNumber <= totalGameNumber
       ? `GAME ${gameNumber - 1}/7 Finished. Take a short break!`
-      : `All Games Finished! Press "Finish Session". `;
+      : `All Done! Press "Finish Session". `;
 
   notes.forEach((note) => {
     note.clear();
@@ -526,6 +569,9 @@ export {
   reactionTimes,
   setPassSequence,
   gameNumber,
-  totalGameNumber
+  totalGameNumber,
+  passHits,
+  passMisses,
+  passHitRate
 };
 export default app;

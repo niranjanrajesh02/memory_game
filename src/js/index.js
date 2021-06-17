@@ -57,9 +57,13 @@ auth.onAuthStateChanged(user => {
                 console.log("game over");
                 e.preventDefault();
                 const data = {
+                    session: "g0-authentication",
                     hits: game.hits,
                     misses: game.misses,
                     hitRate: game.hitRate.toFixed(3),
+                    passHits: game.passHits,
+                    passMisses: game.passMisses,
+                    passHitRate: game.passHitRate.toFixed(3),
                     // avgReactionTime: avgReaction.toFixed(3),
                 };
                 console.log(user.uid, data);
