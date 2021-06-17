@@ -44,7 +44,7 @@ auth.onAuthStateChanged(user => {
                     game.setPassSequence(seq);
                 });
             } else {
-                console.log(userExists);
+                // console.log(userExists);
                 game.setPassSequence(userExists.passSequence);
             }
             document.querySelector("#main").appendChild(app.view);
@@ -78,4 +78,4 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-console.log(game);
+// console.log(game);

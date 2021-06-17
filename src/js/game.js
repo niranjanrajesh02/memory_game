@@ -63,7 +63,7 @@ const setPassSequence = (seq) => {
   for (let i = 0; i < numberOfLevels - 1; i++) {
     sequence = [...sequence, ...lib.subBlockGen(passSequence)];
   }
-  console.log(sequence);
+  // console.log(sequence);
   // sequence = passSequence
 }
 
