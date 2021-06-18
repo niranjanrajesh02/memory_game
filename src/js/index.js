@@ -15,8 +15,6 @@ const finishBtn = document.getElementById("finishBtn");
 const userDetails = document.getElementById("userDetails");
 const loginToPlay = document.getElementById("loginToPlay");
 
-
-
 signInBtn.onclick = () => {
     auth.signInWithPopup(provider)
         .then(res => {
@@ -31,9 +29,7 @@ auth.onAuthStateChanged(user => {
     if (user) {
         signedIn.hidden = false;
         signedOut.hidden = true;
-
-        userDetails.innerHTML = `<p style="padding: 0; margin: 0;">Hello ${user.displayName}!</p>`
-
+        userDetails.innerHTML = `<p style="padding: 0; margin: 0;">Hello ${user.displayName}!</p>`;
         const ref = database.ref(user.uid);
         ref.once("value", (data) => {
             const userExists = data.val();
@@ -74,7 +70,8 @@ auth.onAuthStateChanged(user => {
                 alert(`Game not over yet, Game number ${game.gameNumber} out of 7`);
             }
         };
-    } else {
+    }
+    else {
         signedIn.hidden = true;
         signedOut.hidden = false;
         loginToPlay.innerHTML = `<p style="padding: 0; margin: 0;">Login to Play</p>`;

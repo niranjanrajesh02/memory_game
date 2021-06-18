@@ -256,36 +256,28 @@ function authSeqGen(passSeq) {
   }
 
   //adding k0 to 6 random indexes
-  for (let i = 0; i < 6; i++) {
-    let randomElement = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
-    seq[randomElement] = k0;
-    availableIndexes.splice(availableIndexes.indexOf(randomElement), 1)
-    indexofPass.push(randomElement)
+  for (let j = 0; j < 18; j = j + 3) {
+    let availableSeq = [k0, k1, k2];
+    for (let i = 0; i < 3; i++) {
+      let randomSeq = availableSeq[Math.floor(Math.random() * availableSeq.length)];
+      if (randomSeq === k0) {
+        indexofPass.push(j + i);
+      }
+      seq[j + i] = randomSeq;
+      availableSeq.splice(availableSeq.indexOf(randomSeq), 1)
+    }
   }
-
-  //adding k1 to 6 random indexes
-  for (let i = 0; i < 6; i++) {
-    let randomElement = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
-    seq[randomElement] = k1;
-    availableIndexes.splice(availableIndexes.indexOf(randomElement), 1)
-  }
-
-  //adding k2 to 6 random indexes
-  for (let i = 0; i < 6; i++) {
-    let randomElement = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
-    seq[randomElement] = k2;
-    availableIndexes.splice(availableIndexes.indexOf(randomElement), 1)
-  }
+  console.log(seq);
   //stores the position of the first item of the passsequence in both arrays
   const flattenedSeq = seq.flat();
   let indexinFlattened = indexofPass.map((item) => (
     item = item * 30
   ))
-  // console.log(indexofPass);
-  // console.log(indexinFlattened.sort(function (a, b) { return a - b }));
-  // console.log(flattenedSeq);
+  console.log(indexinFlattened);
 
-  return { sequence: flattenedSeq, indexesOfPass: indexinFlattened.sort(function (a, b) { return a - b }) }
+  console.log(flattenedSeq);
+
+  return { sequence: flattenedSeq, indexesOfPass: indexinFlattened }
 }
 
 

@@ -71,10 +71,11 @@ const setPassSequence = (seq) => {
   //   sequence = [...sequence, ...lib.subBlockGen(passSequence)];
   // }
   authGen = lib.authSeqGen(passSequence)
+  console.log(authGen);
   sequence = authGen.sequence;
   passIndexes = authGen.indexesOfPass;
   console.log(sequence);
-  console.log(passIndexes);
+  // console.log(passIndexes);
   // sequence = passSequence
 }
 
