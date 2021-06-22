@@ -1,42 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sasta Guitar Hero</title>
-  </head>
-  <body>
-    <nav style="background-color: #444444; margin-bottom: 2rem;">
-      <ul
-        style="
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sasta Guitar Hero</title>
+</head>
+
+<body>
+  <nav style="background-color: #444444; margin-bottom: 2rem;">
+    <ul style="
           font-size: large;
           font-family: 'pixel', sans-serif;
           list-style-type: none;
           display: flex;
           justify-content: space-between;
         ">
-        <li style="padding: 1rem">SASTA GUITAR HERO</li>
-        <li style="padding: 1rem; display: flex">
-          <section id="signedOut">
-            <div style="display: flex; gap: 2rem; align-items: flex-start">
-              <div id="loginToPlay"></div>
-              <button id="signInBtn">login</button>
-            </div>
-          </section>
+      <li style="padding: 1rem">SASTA GUITAR HERO G0-a</li>
+      <li style="padding: 1rem; display: flex">
+        <section id="signedOut">
+          <div style="display: flex; gap: 2rem; align-items: flex-start">
+            <div id="loginToPlay"></div>
+            <button id="signInBtn">login</button>
+          </div>
+        </section>
 
-          <section id="signedIn" hidden="true">
-            <div style="display: flex; gap: 2rem; align-items: flex-start">
-              <div id="userDetails"></div>
-              <button id="signOutBtn">logout</button>
-            </div>
-          </section>
-        </li>
-      </ul>
-    </nav>
+        <section id="signedIn" hidden="true">
+          <div style="display: flex; gap: 2rem; align-items: flex-start">
+            <div id="userDetails"></div>
+            <button id="signOutBtn">logout</button>
+          </div>
+        </section>
+      </li>
+    </ul>
+  </nav>
 
-    <div
-      id="content"
-      style="
+  <div id="content" style="
         display: flex;
         align-items: flex-start;
         justify-content: flex-start;
@@ -44,26 +43,27 @@
         margin-bottom: 2rem;
         gap: 1rem;
         padding-left: 5%;">
-      <div style="width: 20%">
-        <h4>Game Instructions</h4>
-        <ul>
-          <li style="margin-top: 3%">The aim of the game is to press the matching key when the ball makes contact with the sink</li>
-          <li style="margin-top: 3%">Play the game in an isolated environment without external distractions</li>
-          <li style="margin-top: 3%">The complete session will last around 40 minutes</li>
-          <li style="margin-top: 3%">There are 7 levels in the game with a 20 second break between each level</li>
-          <li style="margin-top: 3%">Click the “Finish Session” button only when you have finished all 7 levels and are prompted to do so</li>
-          <li style="margin-top: 3%">Your performance in the game will be recorded to help in our research</li>
-          <li style="margin-top: 3%">We expect the game to be completed in one sitting</li>
-          <li style="margin-top: 3%">Press Spacebar to pause and resume the game</li>
-        </ul>
-      </div>
-      <div style="width: 800px; height: 600px;" id="main"></div>
-      <button
-        id="finishBtn"
-        style="text-align: center; width: 5rem; height: 3rem">
-        Finish Session
-      </button>
+    <div style="width: 20%">
+      <h4>Game Instructions</h4>
+      <ul>
+        <li style="margin-top: 3%">The aim of the game is to press the matching key when the ball makes contact with the
+          sink</li>
+        <li style="margin-top: 3%">Play the game in an isolated environment without external distractions</li>
+        <li style="margin-top: 3%">The complete session will last around 40 minutes</li>
+        <li style="margin-top: 3%">There are 7 levels in the game with a 20 second break between each level</li>
+        <li style="margin-top: 3%">Click the “Finish Session” button only when you have finished all 7 levels and are
+          prompted to do so</li>
+        <li style="margin-top: 3%">Your performance in the game will be recorded to help in our research</li>
+        <li style="margin-top: 3%">We expect the game to be completed in one sitting</li>
+        <li style="margin-top: 3%">Press Spacebar to pause and resume the game</li>
+      </ul>
     </div>
-    <script src="./js/index.js" defer></script>
-  </body>
+    <div style="width: 800px; height: 600px;" id="main"></div>
+    <button id="finishBtn" style="text-align: center; width: 5rem; height: 3rem">
+      Finish Session
+    </button>
+  </div>
+  <script src="./js/index.js" defer></script>
+</body>
+
 </html>

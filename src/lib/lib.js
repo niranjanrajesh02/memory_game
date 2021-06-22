@@ -267,15 +267,12 @@ function authSeqGen(passSeq) {
       availableSeq.splice(availableSeq.indexOf(randomSeq), 1)
     }
   }
-  console.log(seq);
   //stores the position of the first item of the passsequence in both arrays
   const flattenedSeq = seq.flat();
   let indexinFlattened = indexofPass.map((item) => (
     item = item * 30
   ))
-  console.log(indexinFlattened);
 
-  console.log(flattenedSeq);
 
   return { sequence: flattenedSeq, indexesOfPass: indexinFlattened }
 }

@@ -71,10 +71,10 @@ const setPassSequence = (seq) => {
   //   sequence = [...sequence, ...lib.subBlockGen(passSequence)];
   // }
   authGen = lib.authSeqGen(passSequence)
-  console.log(authGen);
+  // console.log(authGen);
   sequence = authGen.sequence;
   passIndexes = authGen.indexesOfPass;
-  console.log(sequence);
+  // console.log(sequence);
   // console.log(passIndexes);
   // sequence = passSequence
 }
@@ -404,12 +404,12 @@ function onPassOn() {
 }
 
 function onPassHandler() {
-  if (noteCounter < passFirstNote + 30) {
-    console.log(noteCounter, passFirstNote, "ON PASS");
-  }
-  else {
+  if (noteCounter >= passFirstNote + 30) {
     onPassSeq = false;
   }
+  // else {
+  //   console.log("onPass", noteCounter);
+  // }
 }
 
 function play(delta) {
@@ -487,7 +487,7 @@ function play(delta) {
             if (onPassSeq) {
               passHits += 1;
               passHitRate = passHits / (passHits + passMisses);
-              console.log(passHits, passMisses, passHitRate.toPrecision(3));
+              // console.log(passHits, passMisses, passHitRate.toPrecision(3));
             }
 
             // This subtracts the time when the user presses the corresponding fret to 
@@ -511,7 +511,7 @@ function play(delta) {
         if (onPassSeq) {
           passMisses += 1;
           passHitRate = passHits / (passHits + passMisses);
-          console.log(passHits, passMisses, passHitRate.toPrecision(3));
+          // console.log(passHits, passMisses, passHitRate.toPrecision(3));
         }
       }
     });
