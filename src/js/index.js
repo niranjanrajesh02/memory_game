@@ -34,16 +34,18 @@ auth.onAuthStateChanged(user => {
         ref.once("value", (data) => {
             const userExists = data.val();
             //if user is new
-            if (!userExists) {
-                let seq = getRandomPassSequence()
-                ref.child("passSequence").set(seq, () => {
-                    game.setPassSequence(seq);
-                });
-            } else {
+            if (userExists) {
+                // let seq = getRandomPassSequence()
+                // ref.child("passSequence").set(seq, () => {
+                //     game.setPassSequence(seq);
+                // });
                 console.log(userExists);
                 game.setPassSequence(userExists.passSequence);
+                document.querySelector("#main").appendChild(app.view);
+            } else {
+                alert("Please log in to the same account you used last time.")
             }
-            document.querySelector("#main").appendChild(app.view);
+
         });
 
         finishBtn.onclick = (e) => {

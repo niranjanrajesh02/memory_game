@@ -111,8 +111,8 @@ function setup() {
   scoreText = lib.createText(`Score: 0`, { fill: "black" }, scoreScene);
   scoreText.position.set(scoreBg.width / 2 - scoreText.width / 2, 50);
 
-  missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
-  missText.position.set(scoreBg.width / 2 - missText.width / 2, 150);
+  // missText = lib.createText(`Misses: ${misses}`, { fill: "black" }, scoreScene);
+  // missText.position.set(scoreBg.width / 2 - missText.width / 2, 150);
 
   streakText = lib.createText(`Streak: 0`, { fill: "black" }, scoreScene);
   streakText.position.set(scoreBg.width / 2 - streakText.width / 2, 100);
@@ -253,9 +253,9 @@ function setup() {
     isPaused = !isPaused;
   };
 
-  esc.press = () => {
-    isGameOver = true;
-  };
+  // esc.press = () => {
+  //   isGameOver = true;
+  // };
 
   keyInputs.forEach((key, i, arr) => {
     key.press = () => {
@@ -505,7 +505,7 @@ function play(delta) {
         streak = 0;
         hitRate = hits / (hits + misses);
         streakText.text = `Streak: ${streak}`;
-        missText.text = `Misses: ${misses}`;
+        // missText.text = `Misses: ${misses}`;
         // hitText.text = `${hitRate.toPrecision(3)}`;
         noteCounter++;
         if (onPassSeq) {
