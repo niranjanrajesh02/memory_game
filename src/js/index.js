@@ -45,7 +45,6 @@ auth.onAuthStateChanged(user => {
             } else {
                 alert("Please log in to the same account you used last time.")
             }
-
         });
 
         finishBtn.onclick = (e) => {
@@ -55,7 +54,7 @@ auth.onAuthStateChanged(user => {
                 console.log("game over");
                 e.preventDefault();
                 const data = {
-                    session: "g0-authentication",
+                    session: "g0-authentication2",
                     hits: game.hits,
                     misses: game.misses,
                     hitRate: game.hitRate.toFixed(3),
@@ -65,7 +64,6 @@ auth.onAuthStateChanged(user => {
                     // avgReactionTime: avgReaction.toFixed(3),
                 };
                 console.log(user.uid, data);
-
                 ref.push(data);
                 alert(`Uploaded your data:- HITS:${data.hits}, MISSES:${data.misses}, HITRATE:${data.hitRate}.  Thanks for playing!`);
             } else {
